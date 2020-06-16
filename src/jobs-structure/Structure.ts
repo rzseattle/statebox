@@ -1,3 +1,5 @@
+import {Monitors} from "../monitor/Monitors";
+
 export interface IJob {
     id: string;
     name: string;
@@ -6,7 +8,7 @@ export interface IJob {
     progress: { current: number; end: number };
 }
 
-export interface IClient {
+export interface IMonitor {
     id: string;
     name: string;
     title: string;
@@ -16,13 +18,30 @@ export interface IClient {
 }
 
 class Structure {
-    public clients: IClient[] = [];
+    public monitors: IMonitor[] = [];
 
-    public registerClient = (data: Partial<IClient>) => {};
-    public unregisterClient = (clientId: string) => {};
+    public getMonitor = (monitorId: string): IMonitor | null => {
+        const index = structure.monitors.findIndex((el) => el.id === monitorId);
+        if (index !== -1) {
+            return this.monitors[index];
+        }
+        return null;
+    }
 
-    public registerClientJob = (clientId: string, data: Partial<IJob>) => {};
-    public unregisterClientJob = (clientId: string, jobId: string) => {};
+    public registerMonitor = (monitor: IMonitor) => {
+        this.monitors.push(monitor);
+    };
+    public unregisterClient = (clientId: string) => {
+    };
+
+    public registerClientJob = (clientId: string, data: Partial<IJob>) => {
+    };
+    public unregisterClientJob = (clientId: string, jobId: string) => {
+    };
+
+    public getAll() {
+        return this.monitors;
+    }
 }
 
 

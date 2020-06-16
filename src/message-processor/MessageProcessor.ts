@@ -1,4 +1,4 @@
-import { IClient, structure } from "../jobs-structure/Structure";
+import { IMonitor, structure } from "../jobs-structure/Structure";
 import { IJobMessage, IMessage } from "../common-interface/IMessage";
 import { websockets } from "../websockets/Websockets";
 
@@ -8,9 +8,9 @@ class MessageProcessor {
             const m: IJobMessage = message as IJobMessage;
             console.log(m, "priccessing");
 
-            const index = structure.clients.findIndex((el) => el.id === m.clientId);
-            if (index === -1) {
-                const client: IClient = {
+            const monitor = structure.getMonitor(m.clientId);
+            if(monitor === null ){
+                const client: IMonitor = {
                     id: m.clientId,
                     name: "clientName",
                     title: "test client",
@@ -26,9 +26,17 @@ class MessageProcessor {
                         },
                     ],
                 };
-                structure.clients.push(client);
+                structure.registerMonitor(client);
+            }else{
+
             }
-            websockets.informClients(structure.clients);
+
+            const index = structure.monitors.findIndex((el) => el.id === m.clientId);
+            if (index === -1) {
+
+                structure.monitors.push(client);
+            }
+            websockets.informClients(structure.monitors);
         }
     };
 }

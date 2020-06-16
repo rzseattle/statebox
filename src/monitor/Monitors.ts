@@ -2,8 +2,9 @@ import WebSocket, { OpenEvent } from "ws";
 import { IJobInitData, Job } from "./Job";
 import { nanoid } from "nanoid";
 import { IJobMessage } from "../common-interface/IMessage";
+import {throttle} from "../lib/throttle";
 
-export class LoggingClient {
+export class Monitors {
     private connection: WebSocket | null = null;
     private readonly id: string;
     private readonly url: string;
@@ -55,27 +56,3 @@ export class LoggingClient {
     );
 }
 
-const throttle = (func: CallableFunction, limit: number) => {
-    let lastFunc: any;
-    let lastRan: number;
-    return function () {
-        // @ts-ignore
-        const context: any = this;
-        const args = arguments;
-        if (!lastRan) {
-            // @ts-ignore
-            func.apply(context, args);
-            lastRan = Date.now();
-        } else {
-            clearTimeout(lastFunc);
-            // @ts-ignore
-            lastFunc = setTimeout(() => {
-                if (Date.now() - lastRan >= limit) {
-                    // @ts-ignore
-                    func.apply(context, args);
-                    lastRan = Date.now();
-                }
-            }, limit - (Date.now() - lastRan));
-        }
-    };
-};

@@ -1,4 +1,4 @@
-import { LoggingClient } from "./LoggingClient";
+import { Monitors } from "./LoggingClient";
 
 export interface IJobInitData {
     name: string;
@@ -10,7 +10,7 @@ interface IJobData extends IJobInitData {
 }
 
 export class Job {
-    private client: LoggingClient;
+    private client: Monitors;
     private progressFlag: { current: number; end: number } = { current: -1, end: -1 };
     private readonly id: string;
     private readonly title: string;
@@ -18,7 +18,7 @@ export class Job {
     private currentOperation: string = "";
     private logKindMessage: string[] = [];
 
-    constructor(data: IJobData, client: LoggingClient) {
+    constructor(data: IJobData, client: Monitors) {
         this.client = client;
         this.id = data.id;
         this.description = data.description ?? "";

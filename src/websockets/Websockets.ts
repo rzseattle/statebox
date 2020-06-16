@@ -1,11 +1,19 @@
 import WebSocket from "ws";
-import { messageProcessor } from "../message-processor/MessageProcessor";
+import {messageProcessor} from "../message-processor/MessageProcessor";
+import {structure} from "../jobs-structure/Structure";
 
 class MyWebsockets {
-    private wss: WebSocket.Server;
+    private monitorListener!: WebSocket.Server;
+    private listenersListener!: WebSocket.Server;
+
     constructor() {
-        this.wss = new WebSocket.Server({ port: 3011 });
-        this.wss.on("connection", function connection(ws) {
+        this.initMonitorListener();
+        this.initListenersListener();
+    }
+
+    private initMonitorListener = () => {
+        this.monitorListener = new WebSocket.Server({port: 3011});
+        this.monitorListener.on("connection", function connection(ws) {
             ws.on("message", function incoming(message) {
                 try {
                     messageProcessor.process(JSON.parse(message.toString()));
@@ -16,9 +24,19 @@ class MyWebsockets {
         });
     }
 
+    private initListenersListener = () => {
+        this.listenersListener = new WebSocket.Server({port: 3012});
+        this.listenersListener.on("connection", function connection(ws) {
+            ws.send(JSON.stringify(structure.getAll()));
+
+        });
+    }
+
+
     public informClients = (data: any) => {
         console.log("informing clients");
-        this.wss.clients.forEach((ws) => {
+        this.listenersListener.clients.forEach((ws) => {
+            console.log("got one");
             ws.send(JSON.stringify(data));
         });
     };
