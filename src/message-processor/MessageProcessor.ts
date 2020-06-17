@@ -1,20 +1,21 @@
 import { IMonitor, structure } from "../jobs-structure/Structure";
 import { IJobMessage, IMessage } from "../common-interface/IMessage";
 import { websockets } from "../websockets/Websockets";
+import { informator } from "../informator/Informator";
 
 class MessageProcessor {
     public process = (message: IMessage) => {
         if (message.type === "job") {
             const m: IJobMessage = message as IJobMessage;
-            console.log(m, "priccessing");
 
-            const monitor = structure.getMonitor(m.clientId);
-            if(monitor === null ){
+            const monitor = structure.getMonitor(m.monitorId);
+            if (monitor === null) {
                 const client: IMonitor = {
-                    id: m.clientId,
-                    name: "clientName",
-                    title: "test client",
-                    description: "test description",
+                    id: m.monitorId,
+                    name: m.monitorData?.name ?? "unknown name",
+                    title: m.monitorData?.title ?? "unknown title",
+                    description: m.monitorData?.description ?? "unknown title",
+                    labels: m.monitorData?.labels ?? [],
                     modified: Date.now(),
                     jobs: [
                         {
@@ -22,22 +23,37 @@ class MessageProcessor {
                             name: m.title,
                             description: m.description,
                             progress: m.progress,
+                            currentOperation: m.currentOperation,
+                            logs: m.logsPart,
                             title: m.title,
                         },
                     ],
                 };
                 structure.registerMonitor(client);
-            }else{
-
+            } else {
+                const jobIndex = monitor.jobs.findIndex((el) => el.id === m.jobId);
+                if (jobIndex === -1) {
+                    monitor.jobs.push({
+                        id: m.jobId,
+                        name: m.title,
+                        description: m.description,
+                        progress: m.progress,
+                        currentOperation: m.currentOperation,
+                        logs: m.logsPart,
+                        title: m.title,
+                    });
+                } else {
+                    monitor.jobs[jobIndex] = {
+                        ...monitor.jobs[jobIndex],
+                        progress: m.progress,
+                        currentOperation: m.currentOperation,
+                        logs: [...monitor.jobs[jobIndex].logs, ...m.logsPart],
+                    };
+                }
             }
-
-            const index = structure.monitors.findIndex((el) => el.id === m.clientId);
-            if (index === -1) {
-
-                structure.monitors.push(client);
-            }
-            websockets.informClients(structure.monitors);
         }
+        informator.triggerClientInformation();
     };
 }
+
 export const messageProcessor = new MessageProcessor();

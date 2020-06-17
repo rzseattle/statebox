@@ -1,4 +1,12 @@
-import {Monitors} from "../monitor/Monitors";
+export interface IMonitor {
+    id: string;
+    name: string;
+    title: string;
+    description: string;
+    jobs: IJob[];
+    labels: string[];
+    modified: number;
+}
 
 export interface IJob {
     id: string;
@@ -6,15 +14,8 @@ export interface IJob {
     title: string;
     description: string;
     progress: { current: number; end: number };
-}
-
-export interface IMonitor {
-    id: string;
-    name: string;
-    title: string;
-    description: string;
-    jobs: IJob[];
-    modified: number;
+    currentOperation: string;
+    logs: string[];
 }
 
 class Structure {
@@ -26,23 +27,18 @@ class Structure {
             return this.monitors[index];
         }
         return null;
-    }
+    };
 
     public registerMonitor = (monitor: IMonitor) => {
         this.monitors.push(monitor);
     };
-    public unregisterClient = (clientId: string) => {
-    };
-
-    public registerClientJob = (clientId: string, data: Partial<IJob>) => {
-    };
-    public unregisterClientJob = (clientId: string, jobId: string) => {
+    public unregisterMonitor = (monitor: IMonitor) => {
+        this.monitors.push(monitor);
     };
 
     public getAll() {
         return this.monitors;
     }
 }
-
 
 export const structure = new Structure();

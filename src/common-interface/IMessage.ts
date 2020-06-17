@@ -1,6 +1,6 @@
 export interface IMessage {
     type: "log" | "job";
-    clientId: string;
+    monitorId: string;
 }
 
 export interface ILogMessage extends IMessage {
@@ -8,9 +8,17 @@ export interface ILogMessage extends IMessage {
 }
 export interface IJobMessage extends IMessage {
     type: "job";
+    monitorId: string;
     jobId: string;
     title: string;
     description: string;
     progress: { current: number; end: number };
     currentOperation: string;
+    logsPart: string[];
+    monitorData?: {
+        name: string;
+        title: string;
+        description: string;
+        labels: string[];
+    };
 }
