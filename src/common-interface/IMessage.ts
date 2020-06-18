@@ -10,11 +10,13 @@ export interface IJobMessage extends IMessage {
     type: "job";
     monitorId: string;
     jobId: string;
+    name: string;
     title: string;
     description: string;
     progress: { current: number; end: number };
     currentOperation: string;
     logsPart: string[];
+    logsErrorPart: string[];
     monitorData?: {
         name: string;
         title: string;

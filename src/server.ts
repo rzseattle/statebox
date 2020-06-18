@@ -1,10 +1,13 @@
 import { websockets } from "./websockets/Websockets";
+import {garbageCollector} from "./garbage-collector/GarbageCollector";
 
 console.log("xx1 2");
 
 
 
 const x  = websockets;
+
+const y = garbageCollector;
 
 
 

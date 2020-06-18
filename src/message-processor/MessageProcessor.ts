@@ -7,7 +7,6 @@ class MessageProcessor {
     public process = (message: IMessage) => {
         if (message.type === "job") {
             const m: IJobMessage = message as IJobMessage;
-
             const monitor = structure.getMonitor(m.monitorId);
             if (monitor === null) {
                 const client: IMonitor = {
@@ -20,11 +19,12 @@ class MessageProcessor {
                     jobs: [
                         {
                             id: m.jobId,
-                            name: m.title,
+                            name: m.name,
                             description: m.description,
                             progress: m.progress,
                             currentOperation: m.currentOperation,
                             logs: m.logsPart,
+                            errorLogs: m.logsErrorPart,
                             title: m.title,
                         },
                     ],
@@ -35,11 +35,12 @@ class MessageProcessor {
                 if (jobIndex === -1) {
                     monitor.jobs.push({
                         id: m.jobId,
-                        name: m.title,
+                        name: m.name,
                         description: m.description,
                         progress: m.progress,
                         currentOperation: m.currentOperation,
                         logs: m.logsPart,
+                        errorLogs: m.logsErrorPart,
                         title: m.title,
                     });
                 } else {
@@ -48,6 +49,7 @@ class MessageProcessor {
                         progress: m.progress,
                         currentOperation: m.currentOperation,
                         logs: [...monitor.jobs[jobIndex].logs, ...m.logsPart],
+                        errorLogs: [...monitor.jobs[jobIndex].errorLogs, ...m.logsErrorPart],
                     };
                 }
             }

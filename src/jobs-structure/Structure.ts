@@ -16,6 +16,7 @@ export interface IJob {
     progress: { current: number; end: number };
     currentOperation: string;
     logs: string[];
+    errorLogs: string[];
 }
 
 class Structure {
