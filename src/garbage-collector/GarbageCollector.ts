@@ -10,7 +10,7 @@ class GarbageCollector {
         const prevLength = structure.monitors.length;
 
         structure.monitors = structure.monitors.filter((monitor, index) => {
-            if (monitor.modified < Date.now() - 15000) {
+            if (monitor.modified < Date.now() - 150000) {
                 console.log("usuwam");
                 return false;
             }

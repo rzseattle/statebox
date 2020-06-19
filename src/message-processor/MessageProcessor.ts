@@ -31,6 +31,7 @@ class MessageProcessor {
                 };
                 structure.registerMonitor(client);
             } else {
+                monitor.modified = Date.now();
                 const jobIndex = monitor.jobs.findIndex((el) => el.id === m.jobId);
                 if (jobIndex === -1) {
                     monitor.jobs.push({
