@@ -10,7 +10,8 @@ class GarbageCollector {
         const prevLength = structure.monitors.length;
 
         structure.monitors = structure.monitors.filter((monitor, index) => {
-            if (monitor.modified < Date.now() - 150000) {
+            const allDone = monitor.jobs.reduce((p,c) => p && c.done, true);
+            if (monitor.modified < Date.now() - 150000 && allDone ) {
                 console.log("usuwam");
                 return false;
             }

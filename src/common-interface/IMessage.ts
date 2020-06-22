@@ -17,6 +17,8 @@ export interface IJobMessage extends IMessage {
     currentOperation: string;
     logsPart: string[];
     logsErrorPart: string[];
+    done: boolean;
+    error: boolean;
     monitorData?: {
         name: string;
         title: string;

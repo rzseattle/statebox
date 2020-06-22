@@ -1,7 +1,7 @@
-import { IMonitor, structure } from "../jobs-structure/Structure";
-import { IJobMessage, IMessage } from "../common-interface/IMessage";
-import { websockets } from "../websockets/Websockets";
-import { informator } from "../informator/Informator";
+import {IMonitor, structure} from "../jobs-structure/Structure";
+import {IJobMessage, IMessage} from "../common-interface/IMessage";
+import {websockets} from "../websockets/Websockets";
+import {informator} from "../informator/Informator";
 
 class MessageProcessor {
     public process = (message: IMessage) => {
@@ -26,6 +26,9 @@ class MessageProcessor {
                             logs: m.logsPart,
                             errorLogs: m.logsErrorPart,
                             title: m.title,
+                            done: m.done ?? false,
+                            error: m.error ?? false,
+
                         },
                     ],
                 };
@@ -43,6 +46,8 @@ class MessageProcessor {
                         logs: m.logsPart,
                         errorLogs: m.logsErrorPart,
                         title: m.title,
+                        done: m.done ?? false,
+                        error: m.error ?? false,
                     });
                 } else {
                     monitor.jobs[jobIndex] = {
@@ -51,6 +56,8 @@ class MessageProcessor {
                         currentOperation: m.currentOperation,
                         logs: [...monitor.jobs[jobIndex].logs, ...m.logsPart],
                         errorLogs: [...monitor.jobs[jobIndex].errorLogs, ...m.logsErrorPart],
+                        done: m.done ?? false,
+                        error: m.error ?? false,
                     };
                 }
             }
