@@ -1,6 +1,22 @@
 import WebSocket from "ws";
 import { messageProcessor } from "../message-processor/MessageProcessor";
 import { structure } from "../jobs-structure/Structure";
+import { nanoid } from "nanoid";
+
+const clients: Map<
+    string,
+    {
+        trackSelector: {
+            labels: string[];
+            id: string;
+            jobId: string;
+        };
+        upgradeDataInfo: {
+            monitorDataSend: Map<string, boolean>;
+            jobsDataSend: Map<string, boolean>;
+        };
+    }
+> = new Map();
 
 class MyWebsockets {
     private monitorListener!: WebSocket.Server;
@@ -17,7 +33,7 @@ class MyWebsockets {
         this.monitorListener.on("connection", (ws) => {
             ws.on("message", (message) => {
                 try {
-                    messageProcessor.process(JSON.parse(message.toString()));
+                    messageProcessor.process(JSON.parse(message.toString()), ws);
                 } catch (e) {
                     console.log("Error while processing message");
                 }
@@ -28,16 +44,28 @@ class MyWebsockets {
     private initListenersListener = () => {
         console.log("Init listeners listener on 3012");
         this.listenersListener = new WebSocket.Server({ port: 3012 });
-        this.listenersListener.on("connection", function connection(ws) {
+        this.listenersListener.on("connection", (ws) => {
+            console.log("got new connection");
+            //clients.push(1);
             ws.send(JSON.stringify(structure.getAll()));
+            // @ts-ignore
+            ws.id = nanoid();
+
+            ws.on("close", () => {
+                // ws.send(JSON.stringify(structure.getAll()));
+                // @ts-ignore
+                console.log("closing " + ws.id);
+                //clients.splice(0, 1);
+            });
+            ws.on("error", () => {
+                console.log("----------------------error");
+            });
         });
     };
 
     public informClients = (data: any) => {
-        console.log("informing clients");
+        console.clear();
         this.listenersListener.clients.forEach((ws) => {
-            // console.log("got one: " + JSON.stringify(data));
-
             ws.send(JSON.stringify(data));
         });
     };

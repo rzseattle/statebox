@@ -1,17 +1,19 @@
+import { MonitorOverwrite } from "../common-interface/IMessage";
+
 export interface IMonitor {
     id: string;
-    name: string;
     title: string;
     description: string;
     jobs: IJob[];
     labels: string[];
     modified: number;
+    overwriteStrategy: MonitorOverwrite;
 }
 
 export interface IJob {
     id: string;
-    name: string;
     title: string;
+    labels: string[];
     description: string;
     progress: { current: number; end: number };
     currentOperation: string;
@@ -24,10 +26,23 @@ export interface IJob {
 class Structure {
     public monitors: IMonitor[] = [];
 
-    public getMonitor = (monitorId: string): IMonitor | null => {
-        const index = structure.monitors.findIndex((el) => el.id === monitorId);
+    public getMonitor = (monitorId: string, labels: string[], overwriteStrategy: MonitorOverwrite): IMonitor | null => {
+        let index = structure.monitors.findIndex((el) => el.id === monitorId);
         if (index !== -1) {
             return this.monitors[index];
+        } else if (overwriteStrategy !== MonitorOverwrite.CreateNew) {
+            index = structure.monitors.findIndex((el) => {
+                if (
+                    el.labels.length > 0 &&
+                    el.labels.length === labels.length &&
+                    el.labels.join("") === labels.join("")
+                ) {
+                    return true;
+                }
+                if (index !== -1) {
+                    return this.monitors[index];
+                }
+            });
         }
         return null;
     };
@@ -36,7 +51,10 @@ class Structure {
         this.monitors.push(monitor);
     };
     public unregisterMonitor = (monitor: IMonitor) => {
-        this.monitors.push(monitor);
+        const index = structure.monitors.findIndex((el) => el.id === monitor.id);
+        if (index !== -1) {
+            structure.monitors.splice(index, 1);
+        }
     };
 
     public getAll() {

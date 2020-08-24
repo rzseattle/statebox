@@ -1,25 +1,33 @@
 import {IMonitor, structure} from "../jobs-structure/Structure";
-import {IJobMessage, IMessage} from "../common-interface/IMessage";
-import {websockets} from "../websockets/Websockets";
+import {IIdRequestMessage, IJobMessage, IMessage, MonitorOverwrite} from "../common-interface/IMessage";
 import {informator} from "../informator/Informator";
+import {nanoid} from "nanoid";
 
 class MessageProcessor {
-    public process = (message: IMessage) => {
+    public process = (message: IMessage, ws: any) => {
         if (message.type === "job") {
             const m: IJobMessage = message as IJobMessage;
-            const monitor = structure.getMonitor(m.monitorId);
+
+            const labels = m.monitorData?.labels ?? [];
+            const overwriteStrategy = m.monitorData?.overwriteStrategy ?? MonitorOverwrite.CreateNew;
+            let monitor = structure.getMonitor(m.monitorId, labels, overwriteStrategy);
+
+            if(monitor !== null && overwriteStrategy === MonitorOverwrite.Replace){
+                structure.unregisterMonitor(monitor);
+                monitor = null;
+            }
+
             if (monitor === null) {
                 const client: IMonitor = {
                     id: m.monitorId,
-                    name: m.monitorData?.name ?? "unknown name",
+                    overwriteStrategy,
                     title: m.monitorData?.title ?? "unknown title",
                     description: m.monitorData?.description ?? "unknown title",
-                    labels: m.monitorData?.labels ?? [],
+                    labels,
                     modified: Date.now(),
                     jobs: [
                         {
                             id: m.jobId,
-                            name: m.name,
                             description: m.description,
                             progress: m.progress,
                             currentOperation: m.currentOperation,
@@ -28,7 +36,7 @@ class MessageProcessor {
                             title: m.title,
                             done: m.done ?? false,
                             error: m.error ?? false,
-
+                            labels: m.labels ?? [],
                         },
                     ],
                 };
@@ -39,7 +47,6 @@ class MessageProcessor {
                 if (jobIndex === -1) {
                     monitor.jobs.push({
                         id: m.jobId,
-                        name: m.name,
                         description: m.description,
                         progress: m.progress,
                         currentOperation: m.currentOperation,
@@ -48,6 +55,7 @@ class MessageProcessor {
                         title: m.title,
                         done: m.done ?? false,
                         error: m.error ?? false,
+                        labels: m.labels ?? [],
                     });
                 } else {
                     monitor.jobs[jobIndex] = {
@@ -59,10 +67,19 @@ class MessageProcessor {
                         done: m.done ?? false,
                         error: m.error ?? false,
                     };
+                    informator.triggerClientInformation();
                 }
             }
+        } else if (message.type === "id-request") {
+            const m: IIdRequestMessage = message as IIdRequestMessage;
+            ws.send(
+                JSON.stringify({
+                    ...m,
+                    type: "id-response",
+                    id: nanoid(),
+                }),
+            );
         }
-        informator.triggerClientInformation();
     };
 }
 
