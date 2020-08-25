@@ -33,6 +33,9 @@ class MyWebsockets {
         this.monitorListener.on("connection", (ws) => {
             ws.on("message", (message) => {
                 try {
+                    // console.log("message 12 1");
+                    // console.log(message);
+                    // console.log("-----------------");
                     messageProcessor.process(JSON.parse(message.toString()), ws);
                 } catch (e) {
                     console.log("Error while processing message");

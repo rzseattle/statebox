@@ -6,6 +6,9 @@ export interface IMessage {
 export interface IIdRequestMessage extends IMessage {
     type: "id-request";
     elementType: "monitor" | "job";
+    overwriteStrategy: MonitorOverwrite;
+    monitorLabels: string[];
+    jobLabels: string[];
     controlKey1: string;
     controlKey2: string;
     time: number;

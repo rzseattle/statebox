@@ -2,7 +2,7 @@ import { websockets } from "./websockets/Websockets";
 import {garbageCollector} from "./garbage-collector/GarbageCollector";
 
 
-
+console.clear();
 console.log("Starting")
 
 const x  = websockets;

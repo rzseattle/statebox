@@ -39,10 +39,18 @@ class Structure {
                 ) {
                     return true;
                 }
-                if (index !== -1) {
-                    return this.monitors[index];
-                }
             });
+
+            if (index !== -1) {
+                return this.monitors[index];
+            } else {
+                console.log(
+                    structure.monitors.map((el) => {
+                        console.log(el.labels.join("") + "=== " + labels.join(""));
+                    }),
+                );
+                console.log("nie znalazłem");
+            }
         }
         return null;
     };
@@ -59,6 +67,14 @@ class Structure {
 
     public getAll() {
         return this.monitors;
+    }
+
+    findMonitorByLabels(labels: string[]): IMonitor | null {
+        return null;
+    }
+
+    findJobByLabels(monitorId: string, labels: string[]): IJob | null {
+        return null;
     }
 }
 
