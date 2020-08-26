@@ -23,6 +23,8 @@ export interface IJob {
     error: boolean;
 }
 
+//dodac monitor life time and log rotation
+
 class Structure {
     public monitors: IMonitor[] = [];
 
