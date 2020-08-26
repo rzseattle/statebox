@@ -2,21 +2,7 @@ import WebSocket from "ws";
 import { messageProcessor } from "../message-processor/MessageProcessor";
 import { structure } from "../jobs-structure/Structure";
 import { nanoid } from "nanoid";
-
-const clients: Map<
-    string,
-    {
-        trackSelector: {
-            labels: string[];
-            id: string;
-            jobId: string;
-        };
-        upgradeDataInfo: {
-            monitorDataSend: Map<string, boolean>;
-            jobsDataSend: Map<string, boolean>;
-        };
-    }
-> = new Map();
+import { listeners } from "../listeners/Listeners";
 
 class MyWebsockets {
     private monitorListener!: WebSocket.Server;
@@ -47,21 +33,28 @@ class MyWebsockets {
     private initListenersListener = () => {
         console.log("Init listeners listener on 3012");
         this.listenersListener = new WebSocket.Server({ port: 3012 });
+
         this.listenersListener.on("connection", (ws) => {
             console.log("got new connection");
-            //clients.push(1);
+
             ws.send(JSON.stringify(structure.getAll()));
             // @ts-ignore
             ws.id = nanoid();
 
+            ws.on("message", (message) => {
+                const parsed: any = JSON.parse(message.toString());
+                listeners.set(ws, parsed);
+                console.log(listeners);
+            });
+
             ws.on("close", () => {
-                // ws.send(JSON.stringify(structure.getAll()));
                 // @ts-ignore
                 console.log("closing " + ws.id);
-                //clients.splice(0, 1);
+                listeners.delete(ws);
             });
             ws.on("error", () => {
-                console.log("----------------------error");
+                console.log("error in listener");
+                listeners.delete(ws);
             });
         });
     };

@@ -1,11 +1,16 @@
 import { throttle } from "../lib/throttle";
-import {websockets} from "../websockets/Websockets";
-import {structure} from "../jobs-structure/Structure";
+import { websockets } from "../websockets/Websockets";
+import { structure } from "../jobs-structure/Structure";
+import { listeners } from "../listeners/Listeners";
 
 class Informator {
     // to nie może byc całe w throttle
     triggerClientInformation = throttle(() => {
-        websockets.informClients(structure.monitors);
+        console.log([...listeners.values()]);
+        websockets.informClients({
+            monitors: structure.monitors,
+            listeners: [...listeners.values()],
+        });
     }, 30);
 }
 

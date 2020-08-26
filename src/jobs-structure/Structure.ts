@@ -70,10 +70,38 @@ class Structure {
     }
 
     findMonitorByLabels(labels: string[]): IMonitor | null {
+        const index = this.monitors.findIndex((el) => {
+            if (el.labels.length > 0 && el.labels.length === labels.length && el.labels.join("") === labels.join("")) {
+                return true;
+            }
+        });
+
+        if (index !== -1) {
+            return this.monitors[index];
+        }
+
         return null;
     }
 
     findJobByLabels(monitorId: string, labels: string[]): IJob | null {
+        const monitor = this.getMonitor(monitorId, [], MonitorOverwrite.Join);
+
+        if (monitor !== null) {
+            const index = monitor?.jobs.findIndex((el) => {
+                if (
+                    el.labels.length > 0 &&
+                    el.labels.length === labels.length &&
+                    el.labels.join("") === labels.join("")
+                ) {
+                    return true;
+                }
+            });
+
+            if (index !== -1) {
+                return monitor.jobs[index];
+            }
+        }
+
         return null;
     }
 }

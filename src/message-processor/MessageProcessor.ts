@@ -11,10 +11,6 @@ class MessageProcessor {
             const labels = m.monitorData?.labels ?? [];
             const overwriteStrategy = m.monitorData?.overwriteStrategy ?? MonitorOverwrite.CreateNew;
             let monitor = structure.getMonitor(m.monitorId, labels, overwriteStrategy);
-            console.log(structure.monitors.length);
-            if (monitor) {
-                console.log("znalazłem monitor" + monitor.id);
-            }
 
             if (monitor !== null && overwriteStrategy === MonitorOverwrite.Replace) {
                 structure.unregisterMonitor(monitor);
@@ -81,7 +77,7 @@ class MessageProcessor {
 
             if (m.elementType === "monitor") {
                 if (m.monitorLabels.length > 0 && m.overwriteStrategy !== MonitorOverwrite.CreateNew) {
-                    const monitor = structure.findMonitorByLabels();
+                    const monitor = structure.findMonitorByLabels(m.monitorLabels);
                     if (monitor !== null) {
                         id = monitor.id;
                     }
