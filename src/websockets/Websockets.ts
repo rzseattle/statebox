@@ -1,8 +1,9 @@
 import WebSocket from "ws";
 import { messageProcessor } from "../message-processor/MessageProcessor";
-import { structure } from "../jobs-structure/Structure";
+import { structure } from "../structure/Structure";
 import { nanoid } from "nanoid";
-import { listeners } from "../listeners/Listeners";
+import { IIdWebsocket, listeners } from "../structure/Listeners";
+import { multiplexer } from "../structure/Multiplexer";
 
 class MyWebsockets {
     private monitorListener!: WebSocket.Server;
@@ -25,6 +26,10 @@ class MyWebsockets {
                     messageProcessor.process(JSON.parse(message.toString()), ws);
                 } catch (e) {
                     console.log("Error while processing message");
+                    console.log(e);
+                    console.log("------------------");
+                    console.log(message);
+                    console.log("------------------");
                 }
             });
         });
@@ -35,26 +40,29 @@ class MyWebsockets {
         this.listenersListener = new WebSocket.Server({ port: 3012 });
 
         this.listenersListener.on("connection", (ws) => {
-            console.log("got new connection");
+            //console.log("got new connection");
 
-            ws.send(JSON.stringify(structure.getAll()));
+            //ws.send(JSON.stringify(structure.getAll()));
+
             // @ts-ignore
+
             ws.id = nanoid();
 
             ws.on("message", (message) => {
                 const parsed: any = JSON.parse(message.toString());
-                listeners.set(ws, parsed);
-                console.log(listeners);
+                listeners.add(ws as IIdWebsocket, parsed);
+
+                // console.log(listeners);
             });
 
             ws.on("close", () => {
                 // @ts-ignore
                 console.log("closing " + ws.id);
-                listeners.delete(ws);
+                listeners.remove((ws as IIdWebsocket).id);
             });
             ws.on("error", () => {
                 console.log("error in listener");
-                listeners.delete(ws);
+                listeners.remove((ws as IIdWebsocket).id);
             });
         });
     };

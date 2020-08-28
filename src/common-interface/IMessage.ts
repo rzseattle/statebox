@@ -1,3 +1,5 @@
+import { IJob, IMonitor } from "../structure/Structure";
+
 export interface IMessage {
     type: "log" | "job" | "id-request";
     monitorId: string;
@@ -12,6 +14,10 @@ export interface IIdRequestMessage extends IMessage {
     controlKey1: string;
     controlKey2: string;
     time: number;
+    data: {
+        monitor?: IMonitor;
+        job?: IJobMessage;
+    };
 }
 
 export interface ILogMessage extends IMessage {
@@ -41,5 +47,8 @@ export interface IJobMessage extends IMessage {
         description: string;
         labels: string[];
         overwriteStrategy: MonitorOverwrite;
+        authKey: string;
+        logRotation: number;
+        lifeTime: number;
     };
 }

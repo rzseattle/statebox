@@ -1,4 +1,4 @@
-import { structure } from "../jobs-structure/Structure";
+import { structure } from "../structure/Structure";
 import { informator } from "../informator/Informator";
 
 class GarbageCollector {
@@ -19,7 +19,7 @@ class GarbageCollector {
         });
 
         if (prevLength !== structure.monitors.length) {
-            informator.triggerClientInformation();
+            // informator.triggerClientInformation();
         }
     };
 }

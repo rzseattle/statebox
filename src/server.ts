@@ -1,6 +1,7 @@
 import { websockets } from "./websockets/Websockets";
 import {garbageCollector} from "./garbage-collector/GarbageCollector";
-
+import express from 'express';
+import {createSecureServer} from "http2";
 
 console.clear();
 console.log("Starting")
@@ -8,15 +9,18 @@ console.log("Starting")
 const x  = websockets;
 const y = garbageCollector;
 
-
-
-/*const app = express();
-const port = 3000;
-app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/webpage/index.html");
+const app = express();
+const port = 3010;
+app.get("/get-id", (req, res) => {
+    res.send("sss");
+    res.end();
 });
 
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));*/
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+
+/*
+
+
 
 // import redis from "redis";
 //
@@ -31,3 +35,4 @@ app.listen(port, () => console.log(`Example app listening at http://localhost:${
 //
 // client.set("key", "value", redis.print);
 // client.get("key", redis.print);
+*/

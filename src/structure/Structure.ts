@@ -8,6 +8,9 @@ export interface IMonitor {
     labels: string[];
     modified: number;
     overwriteStrategy: MonitorOverwrite;
+    authKey: string;
+    logRotation: number;
+    lifeTime: number;
 }
 
 export interface IJob {
@@ -22,8 +25,6 @@ export interface IJob {
     done: boolean;
     error: boolean;
 }
-
-//dodac monitor life time and log rotation
 
 class Structure {
     public monitors: IMonitor[] = [];
@@ -45,13 +46,6 @@ class Structure {
 
             if (index !== -1) {
                 return this.monitors[index];
-            } else {
-                console.log(
-                    structure.monitors.map((el) => {
-                        console.log(el.labels.join("") + "=== " + labels.join(""));
-                    }),
-                );
-                console.log("nie znalazłem");
             }
         }
         return null;
@@ -89,6 +83,8 @@ class Structure {
         const monitor = this.getMonitor(monitorId, [], MonitorOverwrite.Join);
 
         if (monitor !== null) {
+            console.log("jest monitor");
+            // console.log(el.labels.join(",") + " === " + labels.join(","));
             const index = monitor?.jobs.findIndex((el) => {
                 if (
                     el.labels.length > 0 &&
@@ -102,10 +98,13 @@ class Structure {
             if (index !== -1) {
                 return monitor.jobs[index];
             }
+        }else{
+            console.log("to ja kurła monitora nie znajduje " + monitorId);
         }
 
         return null;
     }
 }
 
+// @ts-ignore
 export const structure = new Structure();
