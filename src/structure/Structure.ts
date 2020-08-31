@@ -1,4 +1,6 @@
 import { MonitorOverwrite } from "../common-interface/IMessage";
+import { informator } from "../informator/Informator";
+import { multiplexer } from "./Multiplexer";
 
 export interface IMonitor {
     id: string;
@@ -52,11 +54,13 @@ class Structure {
     };
 
     public registerMonitor = (monitor: IMonitor) => {
+        informator.monitorAdded(monitor);
         this.monitors.push(monitor);
     };
     public unregisterMonitor = (monitor: IMonitor) => {
         const index = structure.monitors.findIndex((el) => el.id === monitor.id);
         if (index !== -1) {
+            informator.monitorRemoved(monitor);
             structure.monitors.splice(index, 1);
         }
     };
@@ -83,7 +87,6 @@ class Structure {
         const monitor = this.getMonitor(monitorId, [], MonitorOverwrite.Join);
 
         if (monitor !== null) {
-            console.log("jest monitor");
             // console.log(el.labels.join(",") + " === " + labels.join(","));
             const index = monitor?.jobs.findIndex((el) => {
                 if (
@@ -98,7 +101,7 @@ class Structure {
             if (index !== -1) {
                 return monitor.jobs[index];
             }
-        }else{
+        } else {
             console.log("to ja kurła monitora nie znajduje " + monitorId);
         }
 

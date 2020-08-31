@@ -7,6 +7,10 @@ export interface IIdWebsocket extends WebSocket {
 export interface IListenerData {
     authKey: string;
     id: string;
+    admin?: {
+        login: string;
+        password: string;
+    };
     tracked: {
         monitorIds: string[];
         monitorLabels: string[];
@@ -28,6 +32,8 @@ class Listeners {
         data.websocket = ws;
         this.listeners.set(ws.id, data);
         multiplexer.addListener(data);
+
+        ws.send(JSON.stringify({ event: "listener-register", id: data.id }));
     };
 
     public getAll = () => {

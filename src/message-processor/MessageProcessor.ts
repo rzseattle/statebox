@@ -57,9 +57,12 @@ class MessageProcessor {
                     ],
                 };
                 job = client.jobs[0];
+                multiplexer.addMonitor(client);
+                multiplexer.addJob(client, job);
+                informator.jobAdded(client, job);
                 structure.registerMonitor(client);
-
             } else {
+                console.log("----------------");
                 monitor.modified = Date.now();
                 const jobIndex = monitor.jobs.findIndex((el) => el.id === m.jobId);
 
@@ -76,9 +79,10 @@ class MessageProcessor {
                         error: m.error ?? false,
                         labels: m.labels ?? [],
                     };
-
+                    console.log("tutaj ---------------- tutaj");
                     monitor.jobs.push(job);
-
+                    multiplexer.addJob(monitor, job);
+                    informator.jobAdded(monitor, job);
                 } else {
                     monitor.jobs[jobIndex] = {
                         ...monitor.jobs[jobIndex],
@@ -89,10 +93,12 @@ class MessageProcessor {
                         done: m.done ?? false,
                         error: m.error ?? false,
                     };
+                    console.log("tutaj2 ---------------- tutaj2");
                     job = monitor.jobs[jobIndex];
+                    informator.jobUpdated(monitor, job);
                 }
             }
-            multiplexer.informListeners(job);
+
             // informator.triggerClientInformation();
         } else if (message.type === "id-request") {
             const m: IIdRequestMessage = message as IIdRequestMessage;
