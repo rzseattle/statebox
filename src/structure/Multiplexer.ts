@@ -92,8 +92,8 @@ class Multiplexer {
     };
 
     public informListeners = (eventType: EVENT_TYPE, monitor: IMonitor, job: IJob | null = null) => {
-        console.log([eventType, job]);
         // asume its job event
+        console.log("------------informing " + eventType + " " + monitor.id);
         if (job !== null) {
             console.log(eventType);
             const comm = {
@@ -111,10 +111,10 @@ class Multiplexer {
                 event: eventType,
                 monitor,
             };
-            console.log(this.monitorConnections);
             this.monitorConnections
                 .filter((el) => el[0] === monitor.id)
                 .forEach((connection) => {
+                    console.log("sub ----");
                     listeners.get(connection[1])?.websocket.send(JSON.stringify(comm));
                 });
         }

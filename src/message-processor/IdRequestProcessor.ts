@@ -10,7 +10,13 @@ export class IdRequestProcessor {
 
         if (message.elementType === "monitor") {
             if (message.monitorLabels.length > 0 && message.overwriteStrategy !== MonitorOverwrite.CreateNew) {
-                const monitor = structure.findMonitorByLabels(message.monitorLabels);
+                let monitor = structure.findMonitorByLabels(message.monitorLabels);
+
+                if (monitor !== null && message.overwriteStrategy === MonitorOverwrite.Replace) {
+                    // id = monitor.id;
+                    structure.unregisterMonitor(monitor);
+                    monitor = null;
+                }
 
                 if (monitor !== null) {
                     id = monitor.id;
@@ -55,8 +61,6 @@ export class IdRequestProcessor {
                         multiplexer.addJob(monitor, jobEntry);
                         informator.jobAdded(monitor, jobEntry);
                     }
-                } else {
-                    console.log("No monitor found");
                 }
             }
         }

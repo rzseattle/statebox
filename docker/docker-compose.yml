@@ -6,7 +6,7 @@ services:
 #        image: redis:alpine
 #        networks:
 #            - app-network
-    app:
+    status-server:
         build:
             context: app
             args:

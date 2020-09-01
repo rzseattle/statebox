@@ -26,6 +26,7 @@ class Informator {
     monitorRemoved = (monitor: IMonitor) => {
         console.log("monitor removed");
         multiplexer.informListeners(EVENT_TYPE.MONITOR_REMOVE, monitor);
+        multiplexer.removeMonitor(monitor);
     };
 
     jobAdded = (monitor: IMonitor, job: IJob) => {
