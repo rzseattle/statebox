@@ -17,13 +17,13 @@ class MessageProcessor {
 
             const labels = m.monitorData?.labels ?? [];
             const overwriteStrategy = m.monitorData?.overwriteStrategy ?? MonitorOverwrite.CreateNew;
-            let monitor = structure.getMonitor(m.monitorId, labels, overwriteStrategy);
+            const monitor = structure.getMonitor(m.monitorId, labels, overwriteStrategy);
 
-            if (monitor !== null && overwriteStrategy === MonitorOverwrite.Replace) {
-                multiplexer.removeMonitor(monitor);
-                structure.unregisterMonitor(monitor);
-                monitor = null;
-            }
+            // if (m.monitorId  === "" && monitor !== null && overwriteStrategy === MonitorOverwrite.Replace) {
+            //     multiplexer.removeMonitor(monitor);
+            //     structure.unregisterMonitor(monitor);
+            //     monitor = null;
+            // }
 
             if (monitor === null) {
                 console.log("nie znalazłem");

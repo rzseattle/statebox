@@ -93,7 +93,7 @@ class Multiplexer {
 
     public informListeners = (eventType: EVENT_TYPE, monitor: IMonitor, job: IJob | null = null) => {
         // asume its job event
-        console.log("------------informing " + eventType + " " + monitor.id);
+        console.log("              > informing " + eventType + " " + monitor.id);
         if (job !== null) {
             console.log(eventType);
             const comm = {

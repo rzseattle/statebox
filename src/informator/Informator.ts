@@ -15,16 +15,17 @@ export enum EVENT_TYPE {
 
 class Informator {
     monitorAdded = (monitor: IMonitor) => {
-        console.log("monitor added");
+        console.log("+++ monitor " + monitor.id);
         multiplexer.addMonitor(monitor);
         multiplexer.informListeners(EVENT_TYPE.MONITOR_NEW, monitor);
     };
     monitorUpdated = (monitor: IMonitor) => {
-        console.log("monitor updated");
+        console.log("@@@ monitor " + monitor.id);
         multiplexer.informListeners(EVENT_TYPE.MONITOR_UPDATE, monitor);
     };
     monitorRemoved = (monitor: IMonitor) => {
-        console.log("monitor removed");
+        console.log("--- monitor " + monitor.id);
+        console.trace();
         multiplexer.informListeners(EVENT_TYPE.MONITOR_REMOVE, monitor);
         multiplexer.removeMonitor(monitor);
     };
