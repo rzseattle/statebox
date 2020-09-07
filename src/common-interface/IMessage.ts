@@ -34,6 +34,7 @@ export interface IJobMessage extends IMessage {
     monitorId: string;
     labels: string[];
     jobId: string;
+    name: string;
     title: string;
     description: string;
     progress: { current: number; end: number };
@@ -42,6 +43,7 @@ export interface IJobMessage extends IMessage {
     logsErrorPart: string[];
     done: boolean;
     error: boolean;
+    data: any;
     monitorData?: {
         title: string;
         description: string;

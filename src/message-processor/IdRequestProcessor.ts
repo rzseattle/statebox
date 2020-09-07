@@ -47,12 +47,14 @@ export class IdRequestProcessor {
                     } else {
                         const jobEntry = {
                             id,
-                            description: message.data.job?.description || "unktow description",
+                            name: message.data.job?.name || "ID:" + id,
+                            title: message.data.job?.title || "",
+                            description: message.data.job?.description || "",
                             progress: message.data.job?.progress || { current: -1, end: -1 },
                             currentOperation: message.data.job?.currentOperation || "",
                             logs: [],
                             errorLogs: [],
-                            title: message.data.job?.title || "unktow title",
+
                             done: false,
                             error: false,
                             labels: message.jobLabels,

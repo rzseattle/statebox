@@ -44,6 +44,7 @@ class MessageProcessor {
                     jobs: [
                         {
                             id: m.jobId,
+                            name: m.name,
                             description: m.description,
                             progress: m.progress,
                             currentOperation: m.currentOperation,
@@ -53,6 +54,7 @@ class MessageProcessor {
                             done: m.done ?? false,
                             error: m.error ?? false,
                             labels: m.labels ?? [],
+                            data: m.data ?? null
                         },
                     ],
                 };
@@ -69,6 +71,7 @@ class MessageProcessor {
                 if (jobIndex === -1) {
                     job = {
                         id: m.jobId,
+                        name: m.name,
                         description: m.description,
                         progress: m.progress,
                         currentOperation: m.currentOperation,
@@ -78,12 +81,14 @@ class MessageProcessor {
                         done: m.done ?? false,
                         error: m.error ?? false,
                         labels: m.labels ?? [],
+                        data: m.data ?? null
                     };
                     console.log("tutaj ---------------- tutaj");
                     monitor.jobs.push(job);
                     multiplexer.addJob(monitor, job);
                     informator.jobAdded(monitor, job);
                 } else {
+                    console.log(JSON.stringify(m))
                     monitor.jobs[jobIndex] = {
                         ...monitor.jobs[jobIndex],
                         progress: m.progress,
@@ -92,6 +97,7 @@ class MessageProcessor {
                         errorLogs: [...monitor.jobs[jobIndex].errorLogs, ...m.logsErrorPart],
                         done: m.done ?? false,
                         error: m.error ?? false,
+                        data: m.data ?? null
                     };
                     console.log("tutaj2 ---------------- tutaj2");
                     job = monitor.jobs[jobIndex];

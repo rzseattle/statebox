@@ -17,6 +17,7 @@ export interface IMonitor {
 
 export interface IJob {
     id: string;
+    name: string;
     title: string;
     labels: string[];
     description: string;
@@ -25,6 +26,7 @@ export interface IJob {
     logs: string[];
     errorLogs: string[];
     done: boolean;
+    data: any;
     error: boolean;
 }
 
