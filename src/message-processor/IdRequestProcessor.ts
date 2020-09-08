@@ -58,6 +58,7 @@ export class IdRequestProcessor {
                             done: false,
                             error: false,
                             labels: message.jobLabels,
+                            data: message.data
                         };
                         monitor?.jobs.push(jobEntry);
                         multiplexer.addJob(monitor, jobEntry);
