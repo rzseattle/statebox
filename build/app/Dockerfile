@@ -23,7 +23,7 @@ WORKDIR /project
 # copy the repository form the previous image
 COPY --from=builder /build /tmp/
 
-RUN echo '#!/bin/bash\n set -e\nif [ ! -d "/project/.git" ] ; then  cp -a /tmp/. /project/ ; fi; exec "$@";' > /root/start.sh
+RUN echo '#!/bin/bash\n set -e\nif [ ! -d "/project/.git" ] ; then  cp -a /tmp/. /project/; echo "copying"; fi; exec "$@";' > /root/start.sh
 RUN chmod +x /root/start.sh
 ENTRYPOINT ["/root/start.sh"]
 CMD ["yarn", "run" , "dev"]
