@@ -10,7 +10,7 @@ const x  = websockets;
 const y = garbageCollector;
 
 const app = express();
-const port = 3010;
+const port = 3000;
 app.get("/get-id", (req, res) => {
     res.send("sss");
     res.end();
