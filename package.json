@@ -5,8 +5,8 @@
     "license": "MIT",
     "scripts": {
         "dev": "ts-node-dev --respawn ./src/server.ts",
-        "build": "deploy build -t media.as-pl.com-builder ./build/docker/builder/ &&  docker run -v $(pwd):/project -v ~/.ssh:/root/.ssh media.as-pl.com-builder",
-        "run": "deploy build -t media.as-pl.com ./build/docker/app/ &&  docker run -v $(pwd):/project -p 4000:4000 media.as-pl.com"
+        "build": "build build -t media.as-pl.com-builder ./build/docker/builder/ &&  docker run -v $(pwd):/project -v ~/.ssh:/root/.ssh media.as-pl.com-builder",
+        "run": "build build -t media.as-pl.com ./build/docker/app/ &&  docker run -v $(pwd):/project -p 4000:4000 media.as-pl.com"
     },
     "devDependencies": {
         "@types/express": "^4.17.7",

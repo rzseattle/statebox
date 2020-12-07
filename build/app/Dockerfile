@@ -31,6 +31,8 @@ RUN if [ ! -d ".git" ] ; then \
 
 FROM node:14.4.0-buster
 WORKDIR /project
+# copy the repository form the previous image
+COPY --from=builder /build /tmp/
 
 RUN echo '#!/bin/bash\n set -e\nif [ ! -d "/project/.git" ] ; then  cp -a /tmp/. /project/ ; fi; exec "$@";' > /root/start.sh
 RUN chmod +x /root/start.sh
