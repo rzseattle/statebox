@@ -5,25 +5,14 @@ WORKDIR /build
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git;
 
-# add credentials on build
-ARG SSH_PRIVATE_KEY
-## if ssh dir is not mapped it use provided ssh_private_key
-## docker build --build-arg SSH_PRIVATE_KEY="$(cat key)" -t tag .
-RUN if [ ! -d "/root/.ssh" ] ; then \
-    mkdir /root/.ssh/ && \
-    echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa && \
-    chmod 400 /root/.ssh/id_rsa; \
-    fi;
-
-RUN touch /root/.ssh/known_hosts
-RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 ARG HASH=""
-ARG BRANCH="main"
+ARG BRANCH="master"
 ARG PRODUCTION="0"
 
+
 RUN if [ ! -d ".git" ] ; then \
-    git clone git@github.com:rzseattle/status-server.git --single-branch --branch ${BRANCH} --depth 1 --recurse-submodules /build && \
+    git clone https://github.com/rzseattle/status-server.git --single-branch --branch ${BRANCH} --depth 1 --recurse-submodules /build && \
     yarn install && \
     yarn run build && \
     ls -la; \
