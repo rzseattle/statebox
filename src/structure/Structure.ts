@@ -13,6 +13,7 @@ export interface IMonitor {
     authKey: string;
     logRotation: number;
     lifeTime: number;
+    canClientDoAction: boolean;
 }
 
 export interface IJob {
@@ -33,7 +34,11 @@ export interface IJob {
 class Structure {
     public monitors: IMonitor[] = [];
 
-    public getMonitor = (monitorId: string, labels: string[], overwriteStrategy: MonitorOverwrite): IMonitor | null => {
+    public getMonitor = (
+        monitorId: string,
+        labels: string[],
+        overwriteStrategy: MonitorOverwrite | null,
+    ): IMonitor | null => {
         let index = structure.monitors.findIndex((el) => el.id === monitorId);
         if (index !== -1) {
             return this.monitors[index];

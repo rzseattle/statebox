@@ -1,7 +1,7 @@
 import { IJob, IMonitor } from "../structure/Structure";
 
 export interface IMessage {
-    type: "log" | "job" | "id-request";
+    type: "log" | "job" | "id-request" | "action";
     monitorId: string;
 }
 
@@ -18,6 +18,12 @@ export interface IIdRequestMessage extends IMessage {
         monitor?: IMonitor;
         job?: IJobMessage;
     };
+}
+
+export interface IActionMessage extends IMessage {
+    subjectType: string;
+    subjectId: string;
+    action: "remove" | "cleanup";
 }
 
 export interface ILogMessage extends IMessage {
@@ -51,6 +57,8 @@ export interface IJobMessage extends IMessage {
         overwriteStrategy: MonitorOverwrite;
         authKey: string;
         logRotation: number;
+        canClientDoAction: boolean;
         lifeTime: number;
+        xxxx?: string;
     };
 }

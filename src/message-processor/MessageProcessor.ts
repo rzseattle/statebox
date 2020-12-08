@@ -1,10 +1,22 @@
 import { IJob, IMonitor, structure } from "../structure/Structure";
-import { IIdRequestMessage, IJobMessage, IMessage, MonitorOverwrite } from "../common-interface/IMessage";
+import {
+    IActionMessage,
+    IIdRequestMessage,
+    IJobMessage,
+    IMessage,
+    MonitorOverwrite,
+} from "../common-interface/IMessage";
 import { informator } from "../informator/Informator";
 import { nanoid } from "nanoid";
 import { multiplexer } from "../structure/Multiplexer";
 import { IdRequestProcessor } from "./IdRequestProcessor";
 
+/**
+ * Processing all incoming messages
+ * Only 2 type of messages are processed:
+ * job - job monitoring
+ * id-request - gives id to any object which want to be monitored based on labels and overwrite strategy
+ */
 class MessageProcessor {
     private readonly idRequestProcessor: IdRequestProcessor;
     constructor() {
@@ -12,6 +24,7 @@ class MessageProcessor {
     }
 
     public process = (message: IMessage, ws: any) => {
+        console.log(message);
         if (message.type === "job") {
             const m: IJobMessage = message as IJobMessage;
 
@@ -30,6 +43,7 @@ class MessageProcessor {
             }
 
             let job: IJob;
+            // monitor is not found for job
             if (monitor === null) {
                 const client: IMonitor = {
                     id: m.monitorId,
@@ -41,6 +55,7 @@ class MessageProcessor {
                     logRotation: m.monitorData?.logRotation ?? 200,
                     lifeTime: m.monitorData?.logRotation ?? 3600,
                     authKey: m.monitorData?.authKey ?? "",
+                    canClientDoAction: m.monitorData?.canClientDoAction ?? false,
                     jobs: [
                         {
                             id: m.jobId,
@@ -54,7 +69,7 @@ class MessageProcessor {
                             done: m.done ?? false,
                             error: m.error ?? false,
                             labels: m.labels ?? [],
-                            data: m.data ?? null
+                            data: m.data ?? null,
                         },
                     ],
                 };
@@ -64,6 +79,7 @@ class MessageProcessor {
                 informator.jobAdded(client, job);
                 structure.registerMonitor(client);
             } else {
+                // monitor is found for job
                 console.log("----------------");
                 monitor.modified = Date.now();
                 const jobIndex = monitor.jobs.findIndex((el) => el.id === m.jobId);
@@ -81,14 +97,14 @@ class MessageProcessor {
                         done: m.done ?? false,
                         error: m.error ?? false,
                         labels: m.labels ?? [],
-                        data: m.data ?? null
+                        data: m.data ?? null,
                     };
                     console.log("tutaj ---------------- tutaj");
                     monitor.jobs.push(job);
                     multiplexer.addJob(monitor, job);
                     informator.jobAdded(monitor, job);
                 } else {
-                    console.log(JSON.stringify(m))
+                    console.log(JSON.stringify(m));
                     monitor.jobs[jobIndex] = {
                         ...monitor.jobs[jobIndex],
                         progress: m.progress,
@@ -97,7 +113,7 @@ class MessageProcessor {
                         errorLogs: [...monitor.jobs[jobIndex].errorLogs, ...m.logsErrorPart],
                         done: m.done ?? false,
                         error: m.error ?? false,
-                        data: m.data ?? null
+                        data: m.data ?? null,
                     };
                     console.log("tutaj2 ---------------- tutaj2");
                     job = monitor.jobs[jobIndex];
@@ -118,6 +134,37 @@ class MessageProcessor {
                     id,
                 }),
             );
+        } else if (message.type === "action") {
+            const m: IActionMessage = message as IActionMessage;
+            const monitor = structure.getMonitor(m.monitorId, [], null);
+
+            if (monitor) {
+                if (m.subjectType === "monitor") {
+                    if (m.action === "remove") {
+                        structure.unregisterMonitor(monitor);
+                    }
+                    if (m.action === "cleanup") {
+                        monitor.jobs.forEach((job) => {
+                            informator.jobRemoved(monitor, job);
+                        });
+                        monitor.jobs = [];
+                    }
+                } else if (m.subjectType === "job") {
+                    const jobIndex = monitor.jobs.findIndex((el) => el.id === m.subjectId);
+
+                    if (jobIndex !== -1) {
+                        const job = monitor.jobs[jobIndex];
+
+                        if (m.action === "remove") {
+                            informator.jobRemoved(monitor, job);
+                            monitor.jobs.splice(jobIndex, 1);
+                        }
+                        if (m.action === "cleanup") {
+                            informator.jobUpdated(monitor, job);
+                        }
+                    }
+                }
+            }
         }
     };
 }

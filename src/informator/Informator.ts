@@ -43,14 +43,14 @@ class Informator {
         multiplexer.informListeners(EVENT_TYPE.JOB_REMOVE, monitor, job);
     };
 
-    // to nie może byc całe w throttle
-    triggerClientInformation = throttle(() => {
-        // console.log([...listeners.getAll().values()]);
-        websockets.informClients({
-            monitors: structure.monitors,
-            listeners: [...listeners.getAll().values()],
-        });
-    }, 30);
+    // // to nie może byc całe w throttle
+    // triggerClientInformation = throttle(() => {
+    //     // console.log([...listeners.getAll().values()]);
+    //     websockets.informClients({
+    //         monitors: structure.monitors,
+    //         listeners: [...listeners.getAll().values()],
+    //     });
+    // }, 30);
 }
 
 export const informator = new Informator();

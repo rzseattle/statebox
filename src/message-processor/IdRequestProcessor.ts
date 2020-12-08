@@ -32,6 +32,7 @@ export class IdRequestProcessor {
                         lifeTime: message.data.monitor?.lifeTime || 3600,
                         authKey: "",
                         jobs: [],
+                        canClientDoAction: message.data.monitor?.canClientDoAction ?? false,
                     };
 
                     structure.registerMonitor(newMonitor);
@@ -58,7 +59,7 @@ export class IdRequestProcessor {
                             done: false,
                             error: false,
                             labels: message.jobLabels,
-                            data: message.data
+                            data: message.data,
                         };
                         monitor?.jobs.push(jobEntry);
                         multiplexer.addJob(monitor, jobEntry);

@@ -5,6 +5,9 @@ import { nanoid } from "nanoid";
 import { IIdWebsocket, listeners } from "../structure/Listeners";
 import { multiplexer } from "../structure/Multiplexer";
 
+/**
+ * Websockets connector
+ */
 class MyWebsockets {
     private monitorListener!: WebSocket.Server;
     private listenersListener!: WebSocket.Server;
@@ -14,15 +17,16 @@ class MyWebsockets {
         this.initListenersListener();
     }
 
+    /**
+     * New monitor listener
+     */
     private initMonitorListener = () => {
         console.log("Init monitors listener on 3011");
         this.monitorListener = new WebSocket.Server({ port: 3011 });
         this.monitorListener.on("connection", (ws) => {
             ws.on("message", (message) => {
                 try {
-                    // console.log("message 12 1");
-                    // console.log(message);
-                    // console.log("-----------------");
+                    // passing parsed message to message processor
                     messageProcessor.process(JSON.parse(message.toString()), ws);
                 } catch (e) {
                     console.log("Error while processing message");
@@ -35,24 +39,22 @@ class MyWebsockets {
         });
     };
 
+    /**
+     * New listener connection listener
+     */
     private initListenersListener = () => {
         console.log("Init listeners listener on 3012");
         this.listenersListener = new WebSocket.Server({ port: 3012 });
 
         this.listenersListener.on("connection", (ws) => {
-            //console.log("got new connection");
-
-            //ws.send(JSON.stringify(structure.getAll()));
-
+            // Generating new unique id for listener
             // @ts-ignore
-
             ws.id = nanoid();
 
             ws.on("message", (message) => {
                 const parsed: any = JSON.parse(message.toString());
+                // inserting new listener and id into listeners
                 listeners.add(ws as IIdWebsocket, parsed);
-
-                // console.log(listeners);
             });
 
             ws.on("close", () => {
@@ -67,12 +69,12 @@ class MyWebsockets {
         });
     };
 
-    public informClients = (data: any) => {
-        console.clear();
-        this.listenersListener.clients.forEach((ws) => {
-            ws.send(JSON.stringify(data));
-        });
-    };
+    // public informClients = (data: any) => {
+    //     console.clear();
+    //     this.listenersListener.clients.forEach((ws) => {
+    //         ws.send(JSON.stringify(data));
+    //     });
+    // };
 }
 
 export const websockets = new MyWebsockets();
