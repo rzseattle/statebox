@@ -54,7 +54,17 @@ class MyWebsockets {
             ws.on("message", (message) => {
                 const parsed: any = JSON.parse(message.toString());
                 // inserting new listener and id into listeners
-                listeners.add(ws as IIdWebsocket, parsed);
+                try {
+                    if (parsed.action !== undefined) {
+                        // tutaj logiga akcji
+                        console.log("yeha");
+                        console.log(parsed);
+                    } else {
+                        listeners.add(ws as IIdWebsocket, parsed);
+                    }
+                } catch (ex) {
+                    console.log(ex);
+                }
             });
 
             ws.on("close", () => {

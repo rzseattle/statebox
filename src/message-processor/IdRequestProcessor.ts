@@ -54,7 +54,6 @@ export class IdRequestProcessor {
                             progress: message.data.job?.progress || { current: -1, end: -1 },
                             currentOperation: message.data.job?.currentOperation || "",
                             logs: [],
-                            errorLogs: [],
 
                             done: false,
                             error: false,

@@ -25,7 +25,6 @@ export interface IJob {
     progress: { current: number; end: number };
     currentOperation: string;
     logs: string[];
-    errorLogs: string[];
     done: boolean;
     data: any;
     error: boolean;

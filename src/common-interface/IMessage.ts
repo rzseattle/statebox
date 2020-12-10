@@ -46,7 +46,6 @@ export interface IJobMessage extends IMessage {
     progress: { current: number; end: number };
     currentOperation: string;
     logsPart: string[];
-    logsErrorPart: string[];
     done: boolean;
     error: boolean;
     data: any;

@@ -24,7 +24,17 @@ class MessageProcessor {
     }
 
     public process = (message: IMessage, ws: any) => {
-        console.log(message);
+        console.log(
+            "message:" +
+                message.type +
+                " m:" +
+                // @ts-ignore
+                (message.monitorData?.labels ?? []).join(",") +
+                " j:" +
+                // @ts-ignore
+                (message?.labels ?? []).join(","),
+        );
+
         if (message.type === "job") {
             const m: IJobMessage = message as IJobMessage;
 
@@ -64,7 +74,6 @@ class MessageProcessor {
                             progress: m.progress,
                             currentOperation: m.currentOperation,
                             logs: m.logsPart,
-                            errorLogs: m.logsErrorPart,
                             title: m.title,
                             done: m.done ?? false,
                             error: m.error ?? false,
@@ -80,7 +89,7 @@ class MessageProcessor {
                 structure.registerMonitor(client);
             } else {
                 // monitor is found for job
-                console.log("----------------");
+
                 monitor.modified = Date.now();
                 const jobIndex = monitor.jobs.findIndex((el) => el.id === m.jobId);
 
@@ -92,30 +101,27 @@ class MessageProcessor {
                         progress: m.progress,
                         currentOperation: m.currentOperation,
                         logs: m.logsPart,
-                        errorLogs: m.logsErrorPart,
                         title: m.title,
                         done: m.done ?? false,
                         error: m.error ?? false,
                         labels: m.labels ?? [],
                         data: m.data ?? null,
                     };
-                    console.log("tutaj ---------------- tutaj");
+
                     monitor.jobs.push(job);
                     multiplexer.addJob(monitor, job);
                     informator.jobAdded(monitor, job);
                 } else {
-                    console.log(JSON.stringify(m));
                     monitor.jobs[jobIndex] = {
                         ...monitor.jobs[jobIndex],
                         progress: m.progress,
                         currentOperation: m.currentOperation,
                         logs: [...monitor.jobs[jobIndex].logs, ...m.logsPart],
-                        errorLogs: [...monitor.jobs[jobIndex].errorLogs, ...m.logsErrorPart],
                         done: m.done ?? false,
                         error: m.error ?? false,
                         data: m.data ?? null,
                     };
-                    console.log("tutaj2 ---------------- tutaj2");
+
                     job = monitor.jobs[jobIndex];
                     informator.jobUpdated(monitor, job);
                 }
