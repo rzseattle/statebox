@@ -1,13 +1,13 @@
-import { IJob, IMonitor, structure } from "../structure/Structure";
+import { IJob, ILogMessage, IMonitor, LogMessageTypes, structure } from "../structure/Structure";
 import {
     IActionMessage,
     IIdRequestMessage,
     IJobMessage,
+    ILogKindMessage,
     IMessage,
     MonitorOverwrite,
 } from "../common-interface/IMessage";
 import { informator } from "../informator/Informator";
-import { nanoid } from "nanoid";
 import { multiplexer } from "../structure/Multiplexer";
 import { IdRequestProcessor } from "./IdRequestProcessor";
 
@@ -22,6 +22,22 @@ class MessageProcessor {
     constructor() {
         this.idRequestProcessor = new IdRequestProcessor();
     }
+
+    private prepareLogsArray = (
+        currentLogsArray: ILogMessage[],
+        input: ILogKindMessage[],
+        maxLength: number,
+    ): ILogMessage[] => {
+        let lastKey: number = currentLogsArray.length > 0 ? currentLogsArray[currentLogsArray.length - 1].key : 0;
+        const identyfied = input.map((entry) => ({ ...entry, key: ++lastKey }));
+
+        if (currentLogsArray.length === 0 || currentLogsArray.length + identyfied.length > maxLength) {
+            return identyfied.length < maxLength ? identyfied : identyfied.slice(input.length - maxLength);
+        } else {
+            const toCut = currentLogsArray.length + identyfied.length - maxLength;
+            return [...currentLogsArray.slice(toCut), ...identyfied];
+        }
+    };
 
     public process = (message: IMessage, ws: any) => {
         console.log(
@@ -55,38 +71,37 @@ class MessageProcessor {
             let job: IJob;
             // monitor is not found for job
             if (monitor === null) {
-                const client: IMonitor = {
+                const newMonitor: IMonitor = {
                     id: m.monitorId,
                     overwriteStrategy,
                     title: m.monitorData?.title ?? "unknown title",
                     description: m.monitorData?.description ?? "unknown title",
                     labels,
                     modified: Date.now(),
-                    logRotation: m.monitorData?.logRotation ?? 200,
+                    logRotation: m.monitorData?.logRotation ?? 10,
                     lifeTime: m.monitorData?.logRotation ?? 3600,
                     authKey: m.monitorData?.authKey ?? "",
                     canClientDoAction: m.monitorData?.canClientDoAction ?? false,
-                    jobs: [
-                        {
-                            id: m.jobId,
-                            name: m.name,
-                            description: m.description,
-                            progress: m.progress,
-                            currentOperation: m.currentOperation,
-                            logs: m.logsPart,
-                            title: m.title,
-                            done: m.done ?? false,
-                            error: m.error ?? false,
-                            labels: m.labels ?? [],
-                            data: m.data ?? null,
-                        },
-                    ],
+                    jobs: [],
                 };
-                job = client.jobs[0];
-                multiplexer.addMonitor(client);
-                multiplexer.addJob(client, job);
-                informator.jobAdded(client, job);
-                structure.registerMonitor(client);
+
+                job = {
+                    id: m.jobId,
+                    name: m.name,
+                    description: m.description,
+                    progress: m.progress,
+                    currentOperation: m.currentOperation,
+                    logs: this.prepareLogsArray([], m.logsPart, newMonitor.logRotation),
+                    title: m.title,
+                    done: m.done ?? false,
+                    error: m.error ?? false,
+                    labels: m.labels ?? [],
+                    data: m.data ?? null,
+                };
+
+                // register new monitor
+                structure.registerMonitor(newMonitor);
+                structure.registerJob(newMonitor, job);
             } else {
                 // monitor is found for job
 
@@ -100,23 +115,20 @@ class MessageProcessor {
                         description: m.description,
                         progress: m.progress,
                         currentOperation: m.currentOperation,
-                        logs: m.logsPart,
+                        logs: this.prepareLogsArray([], m.logsPart, monitor.logRotation),
                         title: m.title,
                         done: m.done ?? false,
                         error: m.error ?? false,
                         labels: m.labels ?? [],
                         data: m.data ?? null,
                     };
-
-                    monitor.jobs.push(job);
-                    multiplexer.addJob(monitor, job);
-                    informator.jobAdded(monitor, job);
+                    structure.registerJob(monitor, job);
                 } else {
                     monitor.jobs[jobIndex] = {
                         ...monitor.jobs[jobIndex],
                         progress: m.progress,
                         currentOperation: m.currentOperation,
-                        logs: [...monitor.jobs[jobIndex].logs, ...m.logsPart],
+                        logs: this.prepareLogsArray(monitor.jobs[jobIndex].logs, m.logsPart, monitor.logRotation),
                         done: m.done ?? false,
                         error: m.error ?? false,
                         data: m.data ?? null,

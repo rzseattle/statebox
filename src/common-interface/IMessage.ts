@@ -1,4 +1,4 @@
-import { IJob, IMonitor } from "../structure/Structure";
+import { IJob, IMonitor, LogMessageTypes } from "../structure/Structure";
 
 export interface IMessage {
     type: "log" | "job" | "id-request" | "action";
@@ -26,14 +26,16 @@ export interface IActionMessage extends IMessage {
     action: "remove" | "cleanup";
 }
 
-export interface ILogMessage extends IMessage {
-    type: "log";
-}
-
 export enum MonitorOverwrite {
     CreateNew = "new",
     Join = "join",
     Replace = "replace",
+}
+
+export interface ILogKindMessage {
+    type: LogMessageTypes;
+    msg: string;
+    time: number;
 }
 export interface IJobMessage extends IMessage {
     type: "job";
@@ -45,7 +47,7 @@ export interface IJobMessage extends IMessage {
     description: string;
     progress: { current: number; end: number };
     currentOperation: string;
-    logsPart: string[];
+    logsPart: ILogKindMessage[];
     done: boolean;
     error: boolean;
     data: any;

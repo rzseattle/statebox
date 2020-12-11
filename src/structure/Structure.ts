@@ -24,10 +24,27 @@ export interface IJob {
     description: string;
     progress: { current: number; end: number };
     currentOperation: string;
-    logs: string[];
+    logs: ILogMessage[];
     done: boolean;
     data: any;
     error: boolean;
+}
+
+export interface ILogMessage {
+    key: number;
+    type: LogMessageTypes;
+    msg: string;
+    time: number;
+}
+export enum LogMessageTypes {
+    DEBUG,
+    INFO,
+    NOTICE,
+    WARNING,
+    ERROR,
+    CRITICAL,
+    ALERT,
+    EMERGENCY,
 }
 
 class Structure {
@@ -60,8 +77,12 @@ class Structure {
     };
 
     public registerMonitor = (monitor: IMonitor) => {
-        informator.monitorAdded(monitor);
+        console.log("++++++++++++++++++++++   rejestruje ten holerny monitor");
         this.monitors.push(monitor);
+        // add monitor to routing
+        multiplexer.addMonitor(monitor);
+        // inform listeners about new monitor
+        informator.monitorAdded(monitor);
     };
     public unregisterMonitor = (monitor: IMonitor) => {
         const index = structure.monitors.findIndex((el) => el.id === monitor.id);
@@ -69,6 +90,15 @@ class Structure {
             informator.monitorRemoved(monitor);
             structure.monitors.splice(index, 1);
         }
+    };
+
+    public registerJob = (monitor: IMonitor, job: IJob) => {
+        const index = structure.monitors.findIndex((el) => el.id === monitor.id);
+        structure.monitors[index].jobs.push(job);
+        // add job to routing
+        multiplexer.addJob(monitor, job);
+        // inform listeners about new event
+        informator.jobAdded(monitor, job);
     };
 
     public getAll() {

@@ -16,7 +16,6 @@ export enum EVENT_TYPE {
 class Informator {
     monitorAdded = (monitor: IMonitor) => {
         console.log("+++ monitor " + monitor.id);
-        multiplexer.addMonitor(monitor);
         multiplexer.informListeners(EVENT_TYPE.MONITOR_NEW, monitor);
     };
     monitorUpdated = (monitor: IMonitor) => {

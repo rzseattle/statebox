@@ -34,7 +34,9 @@ export class IdRequestProcessor {
                         jobs: [],
                         canClientDoAction: message.data.monitor?.canClientDoAction ?? false,
                     };
-
+                    console.log("----------");
+                    console.log("rejestruje id: " + message.data.monitor?.title);
+                    console.log("----------");
                     structure.registerMonitor(newMonitor);
                 }
             }

@@ -75,15 +75,13 @@ class Multiplexer {
      * by  monitorConnections
      */
     public addMonitor = (monitor: IMonitor) => {
+        console.log("------------------------ adding monitor ", monitor.labels);
         listeners.getAll().forEach((listener) => {
-            console.log(monitor.labels, "monitor ");
-            console.log(listener.tracked.monitorLabels, "listener");
             if (monitor.authKey !== "" && monitor.authKey !== listener.authKey) {
                 return;
             }
-            console.log("forwart");
-            // checking if monitor labels are tracked by listener
             if (intersect_filter_has_this(monitor.labels, listener.tracked.monitorLabels).length > 0) {
+                // checking if monitor labels are tracked by listener
                 console.log("Monitor is now connected to listener: " + listener.id);
                 this.monitorConnections.push([monitor.id, listener.id]);
             }
@@ -95,6 +93,7 @@ class Multiplexer {
      * by  jobConnections
      */
     public addJob = (monitor: IMonitor, job: IJob) => {
+        console.log("--------------- adding job", job.labels);
         listeners.getAll().forEach((listener) => {
             if (monitor.authKey !== "" && monitor.authKey !== listener.authKey) {
                 return;
