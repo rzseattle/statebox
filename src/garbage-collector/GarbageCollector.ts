@@ -1,5 +1,4 @@
-import { structure } from "../structure/Structure";
-import { informator } from "../informator/Informator";
+import { monitorList } from "../structure/MonitorList";
 
 class GarbageCollector {
     constructor() {
@@ -7,18 +6,18 @@ class GarbageCollector {
     }
 
     collect = () => {
-        const prevLength = structure.monitors.length;
+        const prevLength = monitorList.monitors.length;
 
-        structure.monitors = structure.monitors.filter((monitor, index) => {
-            const allDone = monitor.jobs.reduce((p,c) => p && c.done, true);
-            if (monitor.modified < Date.now() - 150000 && allDone ) {
+        monitorList.monitors = monitorList.monitors.filter((monitor, index) => {
+            const allDone = monitor.getJobs().reduce((p, c) => p && c.done, true);
+            if (monitor.modified < Date.now() - 150000 && allDone) {
                 console.log("usuwam");
                 return false;
             }
             return true;
         });
 
-        if (prevLength !== structure.monitors.length) {
+        if (prevLength !== monitorList.monitors.length) {
             // informator.triggerClientInformation();
         }
     };

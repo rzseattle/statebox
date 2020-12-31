@@ -1,5 +1,6 @@
 import WebSocket from "ws";
-import { multiplexer } from "./Multiplexer";
+import {multiplexer} from "../messenging/Multiplexer";
+
 
 export interface IIdWebsocket extends WebSocket {
     id: string;

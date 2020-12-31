@@ -1,8 +1,6 @@
-import { throttle } from "../lib/throttle";
-import { websockets } from "../websockets/Websockets";
-import { IJob, IMonitor, structure } from "../structure/Structure";
-import { listeners } from "../structure/Listeners";
-import { multiplexer } from "../structure/Multiplexer";
+import { multiplexer } from "./Multiplexer";
+import { Monitor } from "../structure/Monitor";
+import { Job } from "../structure/Job";
 
 export enum EVENT_TYPE {
     MONITOR_NEW = "monitor-new",
@@ -14,30 +12,28 @@ export enum EVENT_TYPE {
 }
 
 class Informator {
-    monitorAdded = (monitor: IMonitor) => {
+    monitorAdded = (monitor: Monitor) => {
         console.log("+++ monitor " + monitor.id);
         multiplexer.informListeners(EVENT_TYPE.MONITOR_NEW, monitor);
     };
-    monitorUpdated = (monitor: IMonitor) => {
+    monitorUpdated = (monitor: Monitor) => {
         console.log("@@@ monitor " + monitor.id);
         multiplexer.informListeners(EVENT_TYPE.MONITOR_UPDATE, monitor);
     };
-    monitorRemoved = (monitor: IMonitor) => {
+    monitorRemoved = (monitor: Monitor) => {
         console.log("--- monitor " + monitor.id);
-        console.trace();
         multiplexer.informListeners(EVENT_TYPE.MONITOR_REMOVE, monitor);
-        multiplexer.removeMonitor(monitor);
     };
 
-    jobAdded = (monitor: IMonitor, job: IJob) => {
+    jobAdded = (monitor: Monitor, job: Job) => {
         console.log("job added");
         multiplexer.informListeners(EVENT_TYPE.JOB_NEW, monitor, job);
     };
-    jobUpdated = (monitor: IMonitor, job: IJob) => {
+    jobUpdated = (monitor: Monitor, job: Job) => {
         console.log("job updated");
         multiplexer.informListeners(EVENT_TYPE.JOB_UPDATE, monitor, job);
     };
-    jobRemoved = (monitor: IMonitor, job: IJob) => {
+    jobRemoved = (monitor: Monitor, job: Job) => {
         console.log("job removed");
         multiplexer.informListeners(EVENT_TYPE.JOB_REMOVE, monitor, job);
     };

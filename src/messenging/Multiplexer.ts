@@ -1,7 +1,9 @@
-import { IListenerData, listeners } from "./Listeners";
-import { IJob, IMonitor, structure } from "./Structure";
-import { EVENT_TYPE } from "../informator/Informator";
+import { IListenerData, listeners } from "../structure/Listeners";
 import { MonitorOverwrite } from "../common-interface/IMessage";
+import { Monitor } from "../structure/Monitor";
+import { monitorList } from "../structure/MonitorList";
+import { Job } from "../structure/Job";
+import { EVENT_TYPE } from "./Informator";
 
 /**
  * Object with passign right infromation baset on selectors
@@ -37,25 +39,25 @@ class Multiplexer {
      */
     public addListener = (listener: IListenerData): any => {
         console.log("Listener add " + listener.id);
-        structure.monitors.forEach((monitor) => {
+        monitorList.monitors.forEach((monitor) => {
             if (monitor.authKey !== "" && monitor.authKey !== listener.authKey) {
                 return;
             }
 
             if (intersect_filter_has_this(monitor.labels, listener.tracked.monitorLabels).length > 0) {
                 this.monitorConnections.push([monitor.id, listener.id]);
-                monitor.jobs.forEach((el) => {
+                monitor.getJobs().forEach((el) => {
                     this.jobConnections.push([el.id, listener.id]);
                 });
             }
         });
         // initing data in listener
-        const tmpMonitors: IMonitor[] = [];
+        const tmpMonitors: Monitor[] = [];
 
         this.monitorConnections
             .filter((el) => el[1] === listener.id)
             .forEach((connection) => {
-                const monitor = structure.getMonitor(connection[0], [], MonitorOverwrite.Replace);
+                const monitor = monitorList.getMonitorTODOANDREMOVE(connection[0], [], MonitorOverwrite.Replace);
                 if (monitor !== null) {
                     tmpMonitors.push(monitor);
                 }
@@ -74,7 +76,7 @@ class Multiplexer {
      * Adds monitor and connect it with listeners
      * by  monitorConnections
      */
-    public addMonitor = (monitor: IMonitor) => {
+    public addMonitor = (monitor: Monitor) => {
         console.log("------------------------ adding monitor ", monitor.labels);
         listeners.getAll().forEach((listener) => {
             if (monitor.authKey !== "" && monitor.authKey !== listener.authKey) {
@@ -92,7 +94,7 @@ class Multiplexer {
      * Adds job and connect it with listeners
      * by  jobConnections
      */
-    public addJob = (monitor: IMonitor, job: IJob) => {
+    public addJob = (monitor: Monitor, job: Job) => {
         console.log("--------------- adding job", job.labels);
         listeners.getAll().forEach((listener) => {
             if (monitor.authKey !== "" && monitor.authKey !== listener.authKey) {
@@ -118,8 +120,8 @@ class Multiplexer {
     /**
      * Removes monitor
      */
-    public removeMonitor = (monitor: IMonitor) => {
-        monitor.jobs.forEach((el) => {
+    public removeMonitor = (monitor: Monitor) => {
+        monitor.getJobs().forEach((el) => {
             this.removeJob(el);
         });
         this.monitorConnections = this.monitorConnections.filter((el) => el[0] !== monitor.id);
@@ -128,7 +130,7 @@ class Multiplexer {
     /**
      * Removes job
      */
-    public removeJob = (job: IJob) => {
+    public removeJob = (job: Job) => {
         this.jobConnections = this.jobConnections.filter((el) => el[0] !== job.id);
     };
 
@@ -136,7 +138,7 @@ class Multiplexer {
      * Inform listeners about monitor and jobs changes
      * Routing is based on jobConnections and monitorConnections
      */
-    public informListeners = (eventType: EVENT_TYPE, monitor: IMonitor, job: IJob | null = null) => {
+    public informListeners = (eventType: EVENT_TYPE, monitor: Monitor, job: Job | null = null) => {
         // asume its job event
         console.log("              > informing " + eventType + " " + monitor.id);
 

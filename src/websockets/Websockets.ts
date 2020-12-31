@@ -1,9 +1,8 @@
 import WebSocket from "ws";
-import { messageProcessor } from "../message-processor/MessageProcessor";
-import { structure } from "../structure/Structure";
+import { messageProcessor } from "../messenging/MessageProcessor";
 import { nanoid } from "nanoid";
 import { IIdWebsocket, listeners } from "../structure/Listeners";
-import { multiplexer } from "../structure/Multiplexer";
+import { listenerActions } from "../listener-actions/ListenerActions";
 
 /**
  * Websockets connector
@@ -56,9 +55,9 @@ class MyWebsockets {
                 // inserting new listener and id into listeners
                 try {
                     if (parsed.action !== undefined) {
-                        // tutaj logiga akcji
-                        console.log("yeha");
-                        console.log(parsed);
+                        if (parsed.action === "remove-job") {
+                            listenerActions.removeJob(parsed.monitorId, parsed.jobId, parsed.listenerId);
+                        }
                     } else {
                         listeners.add(ws as IIdWebsocket, parsed);
                     }
