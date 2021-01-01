@@ -1,2 +1,7 @@
-node_modules
 .idea
+/packages/*/lib
+/packages/*/node_modules
+/projects/*/yarn-error.log
+packages/*/tsconfig.release.tsbuildinfo
+/lerna-debug.log
+

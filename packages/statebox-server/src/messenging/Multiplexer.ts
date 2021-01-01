@@ -24,7 +24,7 @@ class Multiplexer {
      * Not implemented yet , connections to listen everything
      * @private
      */
-    private adminConnections: string[] = [];
+    // private adminConnections: string[] = [];
 
     constructor() {
         // setInterval(() => {

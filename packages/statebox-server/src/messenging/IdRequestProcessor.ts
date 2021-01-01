@@ -1,7 +1,7 @@
 import { IIdRequestMessage, MonitorOverwrite } from "../common-interface/IMessage";
 import { nanoid } from "nanoid";
 
-import { IMonitor, Monitor } from "../structure/Monitor";
+import {  Monitor } from "../structure/Monitor";
 import { monitorList } from "../structure/MonitorList";
 import { Job } from "../structure/Job";
 import { multiplexer } from "./Multiplexer";

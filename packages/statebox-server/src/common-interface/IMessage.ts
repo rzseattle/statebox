@@ -1,4 +1,3 @@
-import { IMonitor } from "../structure/Monitor";
 import { LogMessageTypes } from "../structure/Job";
 
 export interface IMessage {

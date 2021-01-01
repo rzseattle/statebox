@@ -1,5 +1,5 @@
 class ListenerActions {
-    public removeJob(listenerId: string, monitorId: string, jobId: string) {
+    public removeJob(_listenerId: string, _monitorId: string, _jobId: string) {
         // test
         console.log(arguments);
     }

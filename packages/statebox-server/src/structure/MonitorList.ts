@@ -38,6 +38,7 @@ export class MonitorList {
             if (el.labels.length > 0 && el.labels.length === labels.length && el.labels.join("") === labels.join("")) {
                 return true;
             }
+            return false;
         });
 
         if (index !== -1) {
@@ -64,6 +65,8 @@ export class MonitorList {
                 ) {
                     return true;
                 }
+
+                return false;
             });
 
             if (index !== -1) {

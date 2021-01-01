@@ -21,7 +21,7 @@ RUN if [ ! -d ".git" ] ; then \
 FROM node:14.4.0-buster
 WORKDIR /project
 # copy the repository form the previous image
-COPY --from=builder /build /tmp/
+COPY --from=builder /packages/statebox-server/build /tmp/
 
 RUN echo '#!/bin/bash\n set -e;\necho "test message";\nif [ ! -d "/project/.git" ] ; then  cp -a /tmp/. /project/; echo "copying"; fi; exec "$@";' > /root/start.sh
 RUN chmod +x /root/start.sh

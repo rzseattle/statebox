@@ -5,7 +5,6 @@ import { Monitor } from "../structure/Monitor";
 import { Job } from "../structure/Job";
 import { monitorList } from "../structure/MonitorList";
 import { informator } from "./Informator";
-import { multiplexer } from "./Multiplexer";
 
 /**
  * Processing all incoming messages

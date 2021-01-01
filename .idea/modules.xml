@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/status-server.iml" filepath="$PROJECT_DIR$/.idea/status-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../statebox/.idea/statebox.iml" filepath="$PROJECT_DIR$/../statebox/.idea/statebox.iml" />
     </modules>
   </component>
 </project>
