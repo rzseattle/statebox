@@ -3,7 +3,7 @@ import { Monitor } from "../structure/Monitor";
 import { Monitors } from "../structure/Monitors";
 import { Job } from "../structure/Job";
 import { STATEBOX_EVENTS } from "../structure/StateboxEventsRouter";
-import { intersectFilterHasThis } from "../lib/CompareTools";
+import { compareLabels, intersectFilterHasThis } from "../lib/CompareTools";
 
 /**
  * Object with passign right infromation baset on selectors
@@ -43,7 +43,9 @@ export class Multiplexer {
             if (intersectFilterHasThis(monitor.labels, listener.tracked.monitorLabels)) {
                 this.monitorConnections.push([monitor.id, listener.id]);
                 monitor.getJobs().forEach((el) => {
-                    this.jobConnections.push([el.id, listener.id]);
+                    if (compareLabels(el.labels, listener.tracked.jobLabels)) {
+                        this.jobConnections.push([el.id, listener.id]);
+                    }
                 });
             }
         });

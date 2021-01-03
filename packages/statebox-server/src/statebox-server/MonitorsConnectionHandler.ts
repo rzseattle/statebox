@@ -1,45 +1,32 @@
 import * as WebSocket from "ws";
-import { nanoid } from "nanoid";
-import { listenerActions } from "../listener-actions/ListenerActions";
-import { IIdWebsocket, Listeners } from "../structure/Listeners";
 
-export class ListenersConnectionHandler {
+
+export class MonitorConnectionHandler {
     private server!: WebSocket.Server;
-    constructor(private port: number, private listeners: Listeners) {}
+    constructor(private port: number, private messageProcessor) {}
 
     public init = async () => {
-        console.log("Init listeners listener on 3012 " + this.port);
         this.server = new WebSocket.Server({ port: this.port });
-
         this.server.on("connection", (ws) => {
-            // Generating new unique id for listener
-            // @ts-ignore
-            ws.id = nanoid();
-
             ws.on("message", (message) => {
-                const parsed: any = JSON.parse(message.toString());
-                // inserting new listener and id into listeners
                 try {
-                    if (parsed.action !== undefined) {
-                        if (parsed.action === "remove-job") {
-                            listenerActions.removeJob(parsed.monitorId, parsed.jobId, parsed.listenerId);
-                        }
-                    } else {
-                        this.listeners.add(ws as IIdWebsocket, parsed);
-                    }
-                } catch (ex) {
-                    console.log(ex);
+                    // passing parsed message to message processor
+                    this.messageProcessor.process(JSON.parse(message.toString()), ws);
+                } catch (e) {
+                    console.log("Error while processing message");
+                    console.log(e);
+                    console.log("------------------");
+                    console.log(message);
+                    console.log("------------------");
                 }
             });
+        });
+    };
 
-            ws.on("close", () => {
-                // @ts-ignore
-                console.log("closing " + ws.id);
-                this.listeners.remove((ws as IIdWebsocket).id);
-            });
-            ws.on("error", () => {
-                console.log("error in listener");
-                this.listeners.remove((ws as IIdWebsocket).id);
+    public close = async () => {
+        return new Promise((resolve) => {
+            this.server.close(() => {
+                resolve(null);
             });
         });
     };

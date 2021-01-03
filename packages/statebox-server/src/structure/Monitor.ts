@@ -1,7 +1,8 @@
 import { IJobMonitorData, MonitorOverwrite } from "../common-interface/IMessage";
 import { Job } from "./Job";
-import { multiplexer } from "../messenging/Multiplexer";
-import { informator } from "../messenging/Informator";
+import { AbstractTrackableObject } from "./AbstractTrackableObject";
+import { STATEBOX_EVENTS } from "./StateboxEventsRouter";
+import { compareLabels } from "../lib/CompareTools";
 
 export enum ClientActions {
     REMOVE_MONITOR = 1,
@@ -9,67 +10,61 @@ export enum ClientActions {
     CLEAN_JOB = 4,
 }
 
-export interface IMonitor {
+export interface IMonitorData {
     id: string;
-    title: string;
-    description: string;
-
+    title?: string;
+    description?: string;
     labels: string[];
-    modified: number;
-    overwriteStrategy: MonitorOverwrite;
-    authKey: string;
-    logRotation: number;
-    lifeTime: number;
-    allowedClientActions: number;
-
-    addJob: (job: Job) => any;
-    removeJob: (job: Job) => any;
-    getJobs: () => Job[];
+    modified?: number;
+    overwriteStrategy?: MonitorOverwrite;
+    logRotation?: number;
+    lifeTime?: number;
+    allowedClientActions?: number;
 }
 
-export class Monitor implements IMonitor {
+export class Monitor extends AbstractTrackableObject implements IMonitorData {
     public static defaultOverwriteStrategy = MonitorOverwrite.CreateNew;
     id: string;
-    title: string = "";
+    title = "";
     labels: string[];
     private jobs: Job[] = [];
-    description: string = "";
+    description = "";
     modified: number = Date.now();
     overwriteStrategy: MonitorOverwrite = Monitor.defaultOverwriteStrategy;
-    authKey: string = "";
-    logRotation: number = 100;
-    lifeTime: number = 3600;
+    logRotation = 100;
+    lifeTime = 3600;
     allowedClientActions: number = ClientActions.REMOVE_JOB + ClientActions.REMOVE_MONITOR + ClientActions.CLEAN_JOB;
 
-    constructor(id: string, labels: string[]) {
+    constructor(id: string, labels: string[], dataToConsume: Partial<IJobMonitorData> = {}) {
+        super();
         this.id = id;
         this.labels = labels;
+        this.consumeInputData(dataToConsume, false);
     }
 
-    consumeInputData(monitorData: IJobMonitorData) {
+    consumeInputData(monitorData: Partial<IJobMonitorData>, triggerChangeEvent = true) {
         this.overwriteStrategy = monitorData.overwriteStrategy ?? this.overwriteStrategy;
         this.title = monitorData.title ?? this.title;
         this.description = monitorData.description ?? this.description;
         this.logRotation = monitorData.logRotation ?? this.logRotation;
         this.lifeTime = monitorData.lifeTime ?? this.lifeTime;
-        this.authKey = monitorData.authKey ?? this.authKey;
+
+        if (triggerChangeEvent) {
+            this.runEvent(STATEBOX_EVENTS.MONITOR_UPDATED, this);
+        }
     }
 
     public addJob = (job: Job) => {
         this.jobs.push(job);
-        // add job to routing
-        multiplexer.addJob(this, job);
-        // inform listeners about new event
-        informator.jobAdded(this, job);
+        job.injectEventsTracker(this.eventsRouter);
+        // todo do it in smarter way
+        job.logRotation = this.logRotation;
+        this.runEvent(STATEBOX_EVENTS.JOB_NEW, { monitor: this, job });
     };
     public removeJob = (job: Job) => {
         const index = this.jobs.findIndex((el) => el.id === job.id);
 
-        // inform listeners about new event
-        informator.jobRemoved(this, job);
-
-        // add job to routing
-        multiplexer.removeJob(job);
+        this.runEvent(STATEBOX_EVENTS.JOB_DELETED, { monitor: this, job });
 
         this.jobs.splice(index, 1);
     };
@@ -89,10 +84,7 @@ export class Monitor implements IMonitor {
 
     findJobByLabels(labels: string[]): Job | null {
         const index = this.jobs.findIndex((el) => {
-            if (el.labels.length > 0 && el.labels.length === labels.length && el.labels.join("") === labels.join("")) {
-                return true;
-            }
-            return false;
+            return compareLabels(el.labels, labels);
         });
 
         if (index !== -1) {

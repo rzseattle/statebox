@@ -1,8 +1,9 @@
 {
     "name": "statebox-monitor",
     "version": "1.0.0",
-    "main": "index.js",
     "license": "MIT",
+    "main": "./lib/index.js",
+    "types": "./lib/index.d.ts",
     "scripts": {
         "clean": "rimraf coverage build tmp",
         "build": "tsc -p tsconfig.release.json",

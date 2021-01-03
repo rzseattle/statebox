@@ -14,7 +14,6 @@ module.exports = {
     testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(ts|js)x?$',
     coverageDirectory: 'coverage',
     collectCoverageFrom: [
-        './../statebox-client/src/**/*.{ts,tsx,js,jsx}',
         'src/**/*.{ts,tsx,js,jsx}',
         '!src/**/*.d.ts',
     ],

@@ -1,4 +1,4 @@
-import NodeWS from "ws";
+import * as NodeWS from "ws";
 import { nanoid } from "nanoid";
 import { Monitor, MonitorOverwrite } from "./Monitor";
 import { IJobData } from "./Job";
@@ -15,7 +15,6 @@ interface IPendingRequest {
 export class Connection {
     private connection!: NodeWS;
     private browserConnection!: WebSocket;
-    private _reconnectTimeout = 15000;
 
     private readonly url: string;
 
@@ -24,8 +23,16 @@ export class Connection {
     private idRequestsPending: IPendingRequest[] = [];
     private onReconnectCallback: (() => any) | null = null;
 
-    constructor(url: string) {
+    constructor(url: string, private _reconnectTimeout = 15000) {
         this.url = url;
+    }
+
+    get reconnectTimeout(): number {
+        return this._reconnectTimeout;
+    }
+
+    set reconnectTimeout(value: number) {
+        this._reconnectTimeout = value;
     }
 
     onReconnect = (callback: () => any) => {
@@ -130,7 +137,7 @@ export class Connection {
         }
     };
 
-    private connectInNode = async () => {
+    private connectInNode = async (): Promise<boolean> => {
         return new Promise((resolve, reject) => {
             this.connection = new NodeWS(this.url, { timeout: 1000 });
             this.connection.on("open", () => {
@@ -139,7 +146,7 @@ export class Connection {
                     this.onReconnectCallback();
                 }
                 clearTimeout(this.reconnectTimeoutToClear);
-                resolve(null);
+                resolve(true);
             });
 
             this.connection.on("error", () => {
@@ -159,7 +166,6 @@ export class Connection {
                         this._reconnectTimeout / 1000 +
                         " s",
                 );
-
                 if (this._reconnectTimeout === 0) {
                     reject(new Error("Status server connection is closed"));
                 } else {
@@ -171,7 +177,7 @@ export class Connection {
             });
         });
     };
-    private connectInBrowser = async () => {
+    private connectInBrowser = async (): Promise<boolean> => {
         return new Promise((resolve, reject) => {
             this.browserConnection = new window.WebSocket(this.url);
             this.browserConnection.addEventListener("open", () => {
@@ -180,7 +186,7 @@ export class Connection {
                     this.onReconnectCallback();
                 }
                 clearTimeout(this.reconnectTimeoutToClear);
-                resolve(null);
+                resolve(true);
             });
 
             this.browserConnection.addEventListener("error", () => {

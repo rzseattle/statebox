@@ -5,7 +5,7 @@
         "outDir": "build",
         "removeComments": true,
         "declaration": true,
-        "composite": true,
+
         "declarationMap": true
     }
 }

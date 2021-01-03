@@ -17,8 +17,7 @@
         "noImplicitAny": false,
         "noImplicitThis": false,
         "strictNullChecks": false,
-        "types": [
-            "node"
-        ]
+        "types": ["jest", "node"],
+        "incremental": false
     }
 }

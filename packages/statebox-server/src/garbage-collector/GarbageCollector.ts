@@ -1,14 +1,17 @@
-import { monitorList } from "../structure/MonitorList";
+import { Monitors } from "../structure/Monitors";
+import Timeout = NodeJS.Timeout;
 
-class GarbageCollector {
-    constructor() {
-        setInterval(this.collect, 10000);
+export class GarbageCollector {
+    private readonly interval: Timeout;
+
+    constructor(private monitors: Monitors) {
+        this.interval = setInterval(this.collect, 10000);
     }
 
     collect = () => {
-        const prevLength = monitorList.monitors.length;
+        const prevLength = this.monitors.monitors.length;
 
-        monitorList.monitors = monitorList.monitors.filter((monitor) => {
+        this.monitors.monitors = this.monitors.monitors.filter((monitor) => {
             const allDone = monitor.getJobs().reduce((p, c) => p && c.done, true);
             if (monitor.modified < Date.now() - 150000 && allDone) {
                 console.log("usuwam");
@@ -17,10 +20,12 @@ class GarbageCollector {
             return true;
         });
 
-        if (prevLength !== monitorList.monitors.length) {
+        if (prevLength !== this.monitors.monitors.length) {
             // informator.triggerClientInformation();
         }
     };
-}
 
-export const garbageCollector = new GarbageCollector();
+    public close = () => {
+        clearInterval(this.interval);
+    };
+}

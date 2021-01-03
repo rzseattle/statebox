@@ -8,13 +8,13 @@ export interface IMessage {
 export interface IIdRequestMessage extends IMessage {
     type: "id-request";
     elementType: "monitor" | "job";
-    overwriteStrategy: MonitorOverwrite;
-    monitorLabels: string[];
-    jobLabels: string[];
-    controlKey1: string;
-    controlKey2: string;
-    time: number;
-    data: {
+    overwriteStrategy?: MonitorOverwrite;
+    monitorLabels?: string[];
+    jobLabels?: string[];
+    controlKey1?: string;
+    controlKey2?: string;
+    time?: number;
+    data?: {
         monitor?: IJobMonitorData;
         job?: IJobMessage;
     };
@@ -43,14 +43,14 @@ export interface IJobMessage extends IMessage {
     labels: string[];
     jobId: string;
     name: string;
-    title: string;
-    description: string;
-    progress: { current: number; end: number };
-    currentOperation: string;
-    logsPart: ILogKindMessage[];
-    done: boolean;
-    error: boolean;
-    data: any;
+    title?: string;
+    description?: string;
+    progress?: { current: number; end: number };
+    currentOperation?: string;
+    logsPart?: ILogKindMessage[];
+    done?: boolean;
+    error?: boolean;
+    data?: any;
     monitorData?: IJobMonitorData;
 }
 
@@ -59,7 +59,6 @@ export interface IJobMonitorData {
     description: string;
     labels: string[];
     overwriteStrategy: MonitorOverwrite;
-    authKey: string;
     logRotation: number;
     canClientDoAction: boolean;
     lifeTime: number;

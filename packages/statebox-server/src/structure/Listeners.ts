@@ -1,40 +1,37 @@
-import WebSocket from "ws";
-import {multiplexer} from "../messenging/Multiplexer";
+import { STATEBOX_EVENTS, StateboxEventsRouter } from "./StateboxEventsRouter";
 
-
-export interface IIdWebsocket extends WebSocket {
-    id: string;
-}
 export interface IListenerData {
-    authKey: string;
     id: string;
     admin?: {
         login: string;
         password: string;
     };
     tracked: {
-        monitorIds: string[];
-        monitorLabels: string[];
-        jobIds: string[];
-        jobLabels: string[];
+        monitorIds?: string[];
+        monitorLabels?: string[];
+        jobIds?: string[];
+        jobLabels?: string[];
     };
-    upgradeDataInfo: {
-        monitorDataSend: Map<string, boolean>;
-        jobsDataSend: Map<string, boolean>;
+    // upgradeDataInfo?: {
+    //     monitorDataSend: Map<string, boolean>;
+    //     jobsDataSend: Map<string, boolean>;
+    // };
+    commChannel: {
+        send: (message: string) => void;
+        close: () => void;
     };
-    websocket: WebSocket;
 }
 
-class Listeners {
+export class Listeners {
     listeners: Map<string, IListenerData> = new Map();
 
-    public add = (ws: IIdWebsocket, data: IListenerData) => {
-        data.id = ws.id;
-        data.websocket = ws;
-        this.listeners.set(ws.id, data);
-        multiplexer.addListener(data);
+    constructor(private eventsRouter: StateboxEventsRouter) {}
 
-        ws.send(JSON.stringify({ event: "listener-register", id: data.id }));
+    public add = (data: IListenerData) => {
+        this.listeners.set(data.id, data);
+        this.eventsRouter.pushEvent(STATEBOX_EVENTS.LISTENER_NEW, data);
+
+        data.commChannel.send(JSON.stringify({ event: "listener-register", id: data.id }));
     };
 
     public getAll = () => {
@@ -48,11 +45,8 @@ class Listeners {
     public remove = (id: string) => {
         const listener = this.get(id);
         if (listener !== undefined) {
-            multiplexer.removeListener(listener);
+            this.eventsRouter.pushEvent(STATEBOX_EVENTS.LISTENER_DELETED, listener);
         }
         this.listeners.delete(id);
     };
 }
-
-// @ts-ignore
-export const listeners = new Listeners();

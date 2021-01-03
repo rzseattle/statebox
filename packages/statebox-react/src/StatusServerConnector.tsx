@@ -54,7 +54,7 @@ export const StatusServerConnector = ({
                     setError("");
                 }
             });
-            connector.current.setUpConnection();
+            await connector.current.connect();
             // setListenerId(await connector.current.getId());
         })();
     }, []);
