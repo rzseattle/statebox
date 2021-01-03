@@ -7,21 +7,23 @@ import { listenerActions } from "../listener-actions/ListenerActions";
 /**
  * Websockets connector
  */
-class MyWebsockets {
+export class StateboxServer {
     private monitorListener!: WebSocket.Server;
     private listenersListener!: WebSocket.Server;
 
-    constructor() {
+    constructor(private listenerPort: number = 312, private monitorPort = 311) {}
+
+    public init = () => {
         this.initMonitorListener();
         this.initListenersListener();
-    }
+    };
 
     /**
      * New monitor listener
      */
     private initMonitorListener = () => {
         console.log("Init monitors listener on 3011");
-        this.monitorListener = new WebSocket.Server({ port: 3011 });
+        this.monitorListener = new WebSocket.Server({ port: this.monitorPort });
         this.monitorListener.on("connection", (ws) => {
             ws.on("message", (message) => {
                 try {
@@ -43,7 +45,7 @@ class MyWebsockets {
      */
     private initListenersListener = () => {
         console.log("Init listeners listener on 3012");
-        this.listenersListener = new WebSocket.Server({ port: 3012 });
+        this.listenersListener = new WebSocket.Server({ port: this.listenerPort });
 
         this.listenersListener.on("connection", (ws) => {
             // Generating new unique id for listener
@@ -85,5 +87,3 @@ class MyWebsockets {
     //     });
     // };
 }
-
-export const websockets = new MyWebsockets();
