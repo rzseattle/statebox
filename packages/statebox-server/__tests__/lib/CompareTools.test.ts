@@ -1,4 +1,4 @@
-import { compareLabels, intersectFilterHasThis } from "../../src/lib/CompareTools";
+import { compareLabels, intersectFilterHasThis, isSubset } from "../../src/lib/CompareTools";
 
 describe("Update communicates tests", () => {
     it("Label comparator", () => {
@@ -20,5 +20,17 @@ describe("Update communicates tests", () => {
         expect(intersectFilterHasThis(["yyy"], ["xxx", "yyy"])).toEqual(true);
         expect(intersectFilterHasThis(["xxx", "yyy"], ["xxx", "yyy"])).toEqual(true);
         expect(intersectFilterHasThis(["xxx", "yyy"], ["yyy", "xxx"])).toEqual(true);
+    });
+
+    it("isSubset", () => {
+        expect(isSubset([], [])).toEqual(false);
+        expect(isSubset([], ["xxx"])).toEqual(false);
+        expect(isSubset(["xxx"], [])).toEqual(false);
+        expect(isSubset(["xxx"], ["xxx"])).toEqual(true);
+        expect(isSubset(["xxx"], ["xxx", "yyy"])).toEqual(false);
+        expect(isSubset(["yyy"], ["xxx", "yyy"])).toEqual(false);
+        expect(isSubset(["xxx", "yyy"], ["xxx", "yyy"])).toEqual(true);
+        expect(isSubset(["xxx", "yyy"], ["yyy", "xxx"])).toEqual(true);
+        expect(isSubset(["xxx", "yyy", "bbb"], ["yyy", "xxx"])).toEqual(true);
     });
 });

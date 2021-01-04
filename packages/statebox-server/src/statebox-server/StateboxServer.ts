@@ -8,6 +8,7 @@ import { GarbageCollector } from "../garbage-collector/GarbageCollector";
 import { Informator } from "../messaging/Informator";
 import { MessageProcessor } from "../messaging/MessageProcessor";
 import { STATEBOX_EVENTS, StateboxEventsRouter } from "../structure/StateboxEventsRouter";
+import {Logger} from "../lib/Logger";
 
 /**
  * Statebox main object
@@ -56,18 +57,26 @@ export class StateboxServer {
      */
     public readonly messageProcessor: MessageProcessor;
 
+
+    /**
+     * Logger
+     */
+    public readonly logger: Logger;
+
     constructor(listenerPort = 3012, monitorPort = 3011) {
+        this.logger = new Logger();
         this.eventsRouter = new StateboxEventsRouter();
         this.listeners = new Listeners(this.eventsRouter);
         this.monitors = new Monitors(this.eventsRouter);
-        this.multiplexer = new Multiplexer(this.listeners, this.monitors);
-        this.informator = new Informator(this.multiplexer);
+        this.multiplexer = new Multiplexer(this.logger, this.listeners, this.monitors);
+        this.informator = new Informator(this.logger, this.multiplexer);
         this.messageProcessor = new MessageProcessor(this.monitors);
 
         this.bindEvents();
 
         this.listenersConnectionHandler = new ListenersConnectionHandler(listenerPort, this.listeners);
         this.monitorsConnectionHandler = new MonitorConnectionHandler(monitorPort, this.messageProcessor);
+
 
         // this.garbageCollector = new GarbageCollector(this.monitors);
     }

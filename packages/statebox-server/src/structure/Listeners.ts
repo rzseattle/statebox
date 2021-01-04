@@ -8,9 +8,9 @@ export interface IListenerData {
     };
     tracked: {
         monitorIds?: string[];
-        monitorLabels?: string[];
+        monitorLabels?: string[][];
         jobIds?: string[];
-        jobLabels?: string[];
+        jobLabels?: string[][];
     };
     // upgradeDataInfo?: {
     //     monitorDataSend: Map<string, boolean>;
