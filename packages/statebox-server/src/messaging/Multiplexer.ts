@@ -1,10 +1,14 @@
 import { IListenerData, Listeners } from "../structure/Listeners";
-import { Monitor } from "../structure/Monitor";
+import { IMonitorData, Monitor } from "../structure/Monitor";
 import { Monitors } from "../structure/Monitors";
 import { Job } from "../structure/Job";
 import { STATEBOX_EVENTS } from "../structure/StateboxEventsRouter";
 import { isSubset } from "../lib/CompareTools";
 import { Logger } from "../lib/Logger";
+
+interface IInitialMonitorState extends IMonitorData {
+    jobs: Job[];
+}
 
 /**
  * Object with passign right infromation baset on selectors
@@ -44,7 +48,7 @@ export class Multiplexer {
             listener.tracked.monitorLabels.forEach((listenerMonitorLabels) => {
                 if (isSubset(listenerMonitorLabels, monitor.labels)) {
                     this.monitorConnections.push([monitor.id, listener.id]);
-                    monitor.getJobs().forEach((el) => {
+                    monitor.jobs.forEach((el) => {
                         listener.tracked.jobLabels.forEach((listenersJobLabels) => {
                             if (isSubset(listenersJobLabels, el.labels)) {
                                 this.jobConnections.push([el.id, listener.id]);
@@ -55,17 +59,21 @@ export class Multiplexer {
             });
         });
         // initing data in listener
-        const tmpMonitors: Monitor[] = [];
+        const tmpMonitors: IInitialMonitorState[] = [];
+
+        const obj = {};
+        this.jobConnections.forEach((el) => {
+            obj[el[0]] = el[1];
+        });
 
         this.monitorConnections
             .filter((el) => el[1] === listener.id)
             .forEach((connection) => {
                 const monitor = this.monitors.findById(connection[0]);
-                if (monitor !== null) {
-                    // TODO
-                    tmpMonitors.push(monitor);
-                    //monitor.getJobs()
-                }
+                tmpMonitors.push({
+                    ...monitor.serialize(),
+                    jobs: monitor.jobs.filter((job) => obj[job.id] === listener.id),
+                });
             });
 
         listener.commChannel.send(
@@ -101,12 +109,10 @@ export class Multiplexer {
     public addJob = (monitor: Monitor, job: Job) => {
         this.logger.log("--------------- adding job", job.labels);
 
-
         this.listeners.getAll().forEach((listener) => {
             // checking if job labels are tracked by listener
             listener.tracked.monitorLabels.forEach((listenerMonitorLabels) => {
                 if (isSubset(listenerMonitorLabels, monitor.labels)) {
-
                     if (listener.tracked.jobLabels.length === 0) {
                         this.jobConnections.push([job.id, listener.id]);
                     } else {
@@ -134,7 +140,7 @@ export class Multiplexer {
      * Removes monitor
      */
     public removeMonitor = (monitor: Monitor) => {
-        monitor.getJobs().forEach((el) => {
+        monitor.jobs.forEach((el) => {
             monitor.removeJob(el);
         });
         this.monitorConnections = this.monitorConnections.filter((el) => el[0] !== monitor.id);

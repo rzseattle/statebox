@@ -27,7 +27,7 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
     id: string;
     title = "";
     labels: string[];
-    private jobs: Job[] = [];
+    jobs: Job[] = [];
     description = "";
     modified: number = Date.now();
     overwriteStrategy: MonitorOverwrite = Monitor.defaultOverwriteStrategy;
@@ -53,6 +53,20 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
             this.runEvent(STATEBOX_EVENTS.MONITOR_UPDATED, this);
         }
     }
+
+    serialize = (): IMonitorData => {
+        return {
+            id: this.id,
+            title: this.title,
+            description: this.description,
+            labels: this.labels,
+            modified: this.modified,
+            overwriteStrategy: this.overwriteStrategy,
+            logRotation: this.logRotation,
+            lifeTime: this.lifeTime,
+            allowedClientActions: this.allowedClientActions,
+        };
+    };
 
     public addJob = (job: Job) => {
         this.jobs.push(job);

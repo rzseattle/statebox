@@ -162,7 +162,7 @@ describe("Request Id and overwrite strategies", () => {
         const id = JSON.parse(mockFn.mock.calls[0][0]).id;
         expect(mockFn).toHaveBeenCalledTimes(1);
         expect(id.length).toBeGreaterThan(10);
-        expect(monitor.getJobs().length).toEqual(1);
+        expect(monitor.jobs.length).toEqual(1);
         expect(monitor.getJobById(id)).not.toEqual(null);
     });
 
@@ -204,7 +204,7 @@ describe("Request Id and overwrite strategies", () => {
         expect(id1).toEqual(id2);
 
         expect(mockFn).toHaveBeenCalledTimes(2);
-        expect(monitor.getJobs().length).toEqual(1);
+        expect(monitor.jobs.length).toEqual(1);
     });
 
     it("MonitorOverwrite.Replace job", () => {
@@ -245,7 +245,7 @@ describe("Request Id and overwrite strategies", () => {
         expect(id1).not.toEqual(id2);
 
         expect(mockFn).toHaveBeenCalledTimes(2);
-        expect(monitor.getJobs().length).toEqual(1);
+        expect(monitor.jobs.length).toEqual(1);
     });
 
     it("MonitorOverwrite.CreateNew job", () => {
@@ -286,6 +286,6 @@ describe("Request Id and overwrite strategies", () => {
         expect(id1).not.toEqual(id2);
 
         expect(mockFn).toHaveBeenCalledTimes(2);
-        expect(monitor.getJobs().length).toEqual(2);
+        expect(monitor.jobs.length).toEqual(2);
     });
 });

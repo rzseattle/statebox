@@ -1,5 +1,6 @@
-.idea
+/.idea/
 /packages/*/lib
+packages/*/coverage
 /packages/*/node_modules
 /projects/*/yarn-error.log
 packages/*/tsconfig.release.tsbuildinfo
