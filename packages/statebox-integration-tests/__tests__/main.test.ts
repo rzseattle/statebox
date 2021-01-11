@@ -1,4 +1,4 @@
-import { StateboxServer } from "statebox-server/lib/statebox-server/StateboxServer";
+import { StateboxServer } from "statebox-server/lib/server/StateboxServer";
 import { Connection } from "statebox-monitor";
 import { StatusServerClient } from "statebox-client";
 import * as NodeWS from "ws";

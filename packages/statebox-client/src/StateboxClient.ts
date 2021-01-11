@@ -3,20 +3,24 @@ import { WEBSOCKET_CLOSE_REASONS, WEBSOCKET_STATUS } from "./SocketEnums";
 import {
     ChangeListener,
     IConfig,
-    IJob,
-    IMonitor,
     MessageListener,
     StatusListener,
 } from "./Interfaces";
+import { MessageProcessor } from "./MessageProcessor";
+import { State } from "./State";
+import { Actions } from "./Actions";
 
-export class StatusServerClient {
+export class StateboxClient {
     private status: WEBSOCKET_STATUS;
     private connectionStatusListener: StatusListener = null;
-    private messageListener: MessageListener;
-    private changeListener: MessageListener;
+    private messageListener: MessageListener = null;
+    private changeListener: MessageListener = null;
     private error: string = null;
     private id: string = null;
-    private monitors: Array<IMonitor> = [];
+    private readonly processor: MessageProcessor;
+    private readonly state: State;
+    private maxLogSize = 20;
+    public actions;
 
     private config: IConfig = {
         authKey: "",
@@ -35,9 +39,9 @@ export class StatusServerClient {
             authKey?: string;
             tracked?: {
                 monitorIds?: Array<string>;
-                monitorLabels?: Array<string>;
+                monitorLabels?: string[][];
                 jobIds?: Array<string>;
-                jobLabels?: Array<string>;
+                jobLabels?: string[][];
             };
         }
     ) {
@@ -47,12 +51,16 @@ export class StatusServerClient {
         if (config.tracked !== undefined) {
             this.config.tracked = { ...this.config.tracked, ...config.tracked };
         }
+
+        this.state = new State();
+        this.processor = new MessageProcessor(this.state, this.maxLogSize);
     }
 
-    private wsOnOpen = () => {
+    private wsOnOpen = async () => {
         this.error = "";
         this.connectionStatusChanged(WEBSOCKET_STATUS.CONNECTED);
         this.configureClient();
+        this.actions = new Actions(await this.getId(), this.connection);
     };
 
     private wsOnMessage = (event: MessageEvent<any>) => {
@@ -74,9 +82,9 @@ export class StatusServerClient {
         this.error = reason;
         this.connectionStatusChanged(WEBSOCKET_STATUS.NOT_CONNECTED);
 
-        this.monitors = [];
+        this.state.monitors = [];
         if (this.changeListener) {
-            this.changeListener(this.monitors);
+            this.changeListener(this.state.monitors);
         }
 
         if (this._reconnectTimeout > 0) {
@@ -92,6 +100,7 @@ export class StatusServerClient {
     connect = async (): Promise<boolean> => {
         return new Promise((resolve, reject) => {
             //this.connection = this._websockets;
+
             this.connection.addEventListener("open", () => {
                 this.wsOnOpen();
                 resolve(true);
@@ -111,7 +120,7 @@ export class StatusServerClient {
 
     public getId = (): Promise<string> => {
         return new Promise<string>((resolve, reject) => {
-            if (this.id !== undefined) {
+            if (this.id !== null) {
                 resolve(this.id);
             } else {
                 let interval = 0;
@@ -137,10 +146,7 @@ export class StatusServerClient {
         this.config.tracked.jobIds = jobIds;
     }
 
-    setTrackingLabels(
-        monitorLabels: Array<string>,
-        jobLabels: Array<string> = []
-    ) {
+    setTrackingLabels(monitorLabels: string[][], jobLabels: string[][] = []) {
         this.config.tracked.monitorLabels = monitorLabels;
         this.config.tracked.jobLabels = jobLabels;
     }
@@ -171,87 +177,14 @@ export class StatusServerClient {
         this.connection.send(JSON.stringify(this.config));
     };
 
-    public clearJob = async (monitorId: string, job: IJob) => {
-        // alert("cleruje jak holera" + job.id);
-        this.connection.send(
-            JSON.stringify({
-                action: "remove-job",
-                monitorId,
-                listenerId: await this.getId(),
-                jobId: job.id,
-            })
-        );
-    };
-    private maxLogSize = 20;
     private processMessage(message: any) {
-        let monitor: IMonitor;
-        let index: number;
-
-        switch (message.event) {
-            case "job-update": {
-                index = this.monitors.findIndex(
-                    (el) => el.id === message.monitorId
-                );
-                monitor = this.monitors[index];
-                index = monitor.jobs.findIndex(
-                    (el) => el.id === message.job.id
-                );
-
-                monitor.jobs[index] = {
-                    ...monitor.jobs[index],
-                    ...message.job,
-                };
-
-                break;
-            }
-            case "job-new": {
-                index = this.monitors.findIndex(
-                    (el) => el.id === message.monitorId
-                );
-                monitor = this.monitors[index];
-                monitor.jobs = [...monitor.jobs, message.job];
-                break;
-            }
-            case "monitor-new": {
-                index = this.monitors.findIndex(
-                    (el) => el.id === message.monitorId
-                );
-                this.monitors.push(message.monitor);
-                break;
-            }
-            case "monitor-remove": {
-                index = this.monitors.findIndex(
-                    (el) => el.id === message.monitor.id
-                );
-                if (index !== -1) {
-                    this.monitors.splice(index, 1);
-                }
-                break;
-            }
-            case "init-info": {
-                message.monitors.forEach((el: IMonitor) => {
-                    this.monitors.push(el);
-                });
-                break;
-            }
-        }
-        for (const currMonitor of this.monitors) {
-            for (const jobIndex in currMonitor.jobs) {
-                if (currMonitor.jobs[jobIndex].logs.length >= this.maxLogSize) {
-                    currMonitor.jobs[jobIndex].logs = currMonitor.jobs[
-                        jobIndex
-                    ].logs.slice(
-                        currMonitor.jobs[jobIndex].logs.length - this.maxLogSize
-                    );
-                }
-            }
-        }
+        this.processor.process(message);
 
         if (this.messageListener !== null) {
             this.messageListener(message);
         }
         if (this.changeListener !== null) {
-            this.changeListener(this.monitors);
+            this.changeListener(this.state.monitors);
         }
     }
 }

@@ -8,7 +8,7 @@ import { GarbageCollector } from "../garbage-collector/GarbageCollector";
 import { Informator } from "../messaging/Informator";
 import { MessageProcessor } from "../messaging/MessageProcessor";
 import { STATEBOX_EVENTS, StateboxEventsRouter } from "../structure/StateboxEventsRouter";
-import {Logger} from "../lib/Logger";
+import { Logger } from "../lib/Logger";
 
 /**
  * Statebox main object
@@ -57,7 +57,6 @@ export class StateboxServer {
      */
     public readonly messageProcessor: MessageProcessor;
 
-
     /**
      * Logger
      */
@@ -74,9 +73,8 @@ export class StateboxServer {
 
         this.bindEvents();
 
-        this.listenersConnectionHandler = new ListenersConnectionHandler(listenerPort, this.listeners);
-        this.monitorsConnectionHandler = new MonitorConnectionHandler(monitorPort, this.messageProcessor);
-
+        this.listenersConnectionHandler = new ListenersConnectionHandler(this.logger, listenerPort, this.listeners);
+        this.monitorsConnectionHandler = new MonitorConnectionHandler(this.logger, monitorPort, this.messageProcessor);
 
         // this.garbageCollector = new GarbageCollector(this.monitors);
     }
@@ -87,7 +85,7 @@ export class StateboxServer {
     };
 
     public close = async () => {
-        this.garbageCollector.close();
+        // this.garbageCollector.close();
         await this.monitorsConnectionHandler.close();
         await this.listenersConnectionHandler.close();
     };

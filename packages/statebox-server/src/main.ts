@@ -1,4 +1,4 @@
-import { StateboxServer } from "./statebox-server/StateboxServer";
+import { StateboxServer } from "./server/StateboxServer";
 
 const server = new StateboxServer();
 server.init();

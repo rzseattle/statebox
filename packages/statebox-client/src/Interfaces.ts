@@ -8,9 +8,9 @@ export interface IConfig {
 	authKey: string;
 	tracked: {
 		monitorIds: Array<string>;
-		monitorLabels: Array<string>;
+		monitorLabels: string[][];
 		jobIds: Array<string>;
-		jobLabels: Array<string>;
+		jobLabels: string[][];
 	};
 }
 

@@ -1,4 +1,4 @@
-import { StateboxServer } from "../../src/statebox-server/StateboxServer";
+import { StateboxServer } from "../../src/server/StateboxServer";
 import { Monitor } from "../../src/structure/Monitor";
 import { Job } from "../../src/structure/Job";
 

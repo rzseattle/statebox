@@ -1,1 +1,1 @@
-# status-server
+# Statebox server

@@ -1,4 +1,4 @@
-import { StateboxServer } from "../../src/statebox-server/StateboxServer";
+import { StateboxServer } from "../../src/server/StateboxServer";
 
 describe("Listeners structure & events test", () => {
     it("Listener add test", () => {

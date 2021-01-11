@@ -11,7 +11,7 @@ export const Job = ({ job, monitorId }: { monitorId: string; job: IJob }) => {
                 {job.title || job.name}
                 <div
                     onClick={() => {
-                        connector.clearJob(monitorId, job);
+                        connector.actions.clearJob(monitorId, job);
                     }}
                     style={{ float: "right", cursor: "pointer", padding: 3 }}
                 >

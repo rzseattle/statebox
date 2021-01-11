@@ -1,5 +1,5 @@
 import { Monitor } from "../../src/structure/Monitor";
-import { StateboxServer } from "../../src/statebox-server/StateboxServer";
+import { StateboxServer } from "../../src/server/StateboxServer";
 import { Job } from "../../src/structure/Job";
 
 describe("Monitors structure & events test", () => {

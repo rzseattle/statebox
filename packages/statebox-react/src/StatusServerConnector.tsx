@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 
 import { MonitorList } from "./MonitorList";
 import {
-    StatusServerClient,
+    StateboxClient,
     IMonitor,
     WEBSOCKET_STATUS,
 } from "statebox-client";
 
-export const ConnectorContext = React.createContext<StatusServerClient>(null);
+export const ConnectorContext = React.createContext<StateboxClient>(null);
 export const StatusServerConnector = ({
     trackedMonitorLabels,
     trackedJobLabels,
@@ -19,7 +19,7 @@ export const StatusServerConnector = ({
     statusServerAddress: string;
     children?: (data: IMonitor[], error: string) => React.ReactNode;
 }) => {
-    const connector = React.useRef<StatusServerClient>();
+    const connector = React.useRef<StateboxClient>();
     const [lastMessage, setLastMessage] = useState([]);
     const [error, setError] = useState("");
 
@@ -28,7 +28,7 @@ export const StatusServerConnector = ({
     useEffect(() => {
         (async () => {
             // @ts-ignore
-            connector.current = new StatusServerClient(statusServerAddress, {
+            connector.current = new StateboxClient(statusServerAddress, {
                 tracked: {
                     monitorLabels: trackedMonitorLabels,
                     jobLabels: trackedJobLabels,

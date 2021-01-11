@@ -1,4 +1,4 @@
-import { StateboxServer } from "../../src/statebox-server/StateboxServer";
+import { StateboxServer } from "../../src/server/StateboxServer";
 import { IJobMessage, MonitorOverwrite } from "../../lib/common-interface/IMessage";
 import { Monitor } from "../../src/structure/Monitor";
 import { Job } from "../../src/structure/Job";

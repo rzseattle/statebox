@@ -2,6 +2,7 @@ import * as WebSocket from "ws";
 import { nanoid } from "nanoid";
 import { listenerActions } from "../listener-actions/ListenerActions";
 import { IListenerData, Listeners } from "../structure/Listeners";
+import { Logger } from "../lib/Logger";
 
 interface IIdWebsocket extends WebSocket {
     id: string;
@@ -9,10 +10,9 @@ interface IIdWebsocket extends WebSocket {
 
 export class ListenersConnectionHandler {
     private server!: WebSocket.Server;
-    constructor(private port: number, private listeners: Listeners) {}
+    constructor(private logger: Logger, private port: number, private listeners: Listeners) {}
 
     public init = async () => {
-        console.log("Init listeners listener on 3012 " + this.port);
         this.server = new WebSocket.Server({ port: this.port });
 
         this.server.on("connection", (ws) => {
@@ -37,17 +37,16 @@ export class ListenersConnectionHandler {
                         this.listeners.add(listener);
                     }
                 } catch (ex) {
-                    console.log(ex);
+                    this.logger.log(ex);
                 }
             });
 
             ws.on("close", () => {
-                // @ts-ignore
-                console.log("closing " + ws.id);
+                this.logger.log("Closing " + (ws as IIdWebsocket).id);
                 this.listeners.remove((ws as IIdWebsocket).id);
             });
             ws.on("error", () => {
-                console.log("error in listener");
+                this.logger.log("Error in listener " + (ws as IIdWebsocket).id);
                 this.listeners.remove((ws as IIdWebsocket).id);
             });
         });
