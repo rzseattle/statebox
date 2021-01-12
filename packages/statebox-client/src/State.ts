@@ -1,5 +1,5 @@
-import { IMonitor } from "./Interfaces";
+import { IMonitorClientState } from "./Interfaces";
 
 export class State {
-    public monitors: Array<IMonitor> = [];
+    public monitors: Array< IMonitorClientState> = [];
 }

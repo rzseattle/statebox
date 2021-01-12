@@ -1,25 +1,12 @@
-import { IJobMonitorData, MonitorOverwrite } from "../common-interface/IMessage";
 import { Job } from "./Job";
 import { AbstractTrackableObject } from "./AbstractTrackableObject";
 import { STATEBOX_EVENTS } from "./StateboxEventsRouter";
 import { compareLabels } from "../lib/CompareTools";
+import { IMonitorMessage, MonitorOverwrite } from "statebox-common";
+import { Operations } from "statebox-common";
 
-export enum ClientActions {
-    REMOVE_MONITOR = 1,
-    REMOVE_JOB = 2,
-    CLEAN_JOB = 4,
-}
-
-export interface IMonitorData {
+export interface IMonitorData extends IMonitorMessage {
     id: string;
-    title?: string;
-    description?: string;
-    labels: string[];
-    modified?: number;
-    overwriteStrategy?: MonitorOverwrite;
-    logRotation?: number;
-    lifeTime?: number;
-    allowedClientActions?: number;
 }
 
 export class Monitor extends AbstractTrackableObject implements IMonitorData {
@@ -33,21 +20,26 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
     overwriteStrategy: MonitorOverwrite = Monitor.defaultOverwriteStrategy;
     logRotation = 100;
     lifeTime = 3600;
-    allowedClientActions: number = ClientActions.REMOVE_JOB + ClientActions.REMOVE_MONITOR + ClientActions.CLEAN_JOB;
+    allowedClientActions: number = Operations.REMOVE_JOB + Operations.REMOVE_MONITOR + Operations.CLEAN_JOB;
+    listenersAccess: { accessToken?: string; jwtCompareData?: any };
+    throttle?: number;
 
-    constructor(id: string, labels: string[], dataToConsume: Partial<IJobMonitorData> = {}) {
+    constructor(id: string, labels: string[], dataToConsume: IMonitorMessage = null) {
         super();
         this.id = id;
         this.labels = labels;
-        this.consumeInputData(dataToConsume, false);
+        if (dataToConsume !== null) {
+            this.consumeInputData(dataToConsume, false);
+        }
     }
 
-    consumeInputData(monitorData: Partial<IJobMonitorData>, triggerChangeEvent = true) {
+    consumeInputData(monitorData: IMonitorMessage, triggerChangeEvent = true) {
         this.overwriteStrategy = monitorData.overwriteStrategy ?? this.overwriteStrategy;
         this.title = monitorData.title ?? this.title;
         this.description = monitorData.description ?? this.description;
         this.logRotation = monitorData.logRotation ?? this.logRotation;
         this.lifeTime = monitorData.lifeTime ?? this.lifeTime;
+        this.listenersAccess = monitorData.listenersAccess;
 
         if (triggerChangeEvent) {
             this.runEvent(STATEBOX_EVENTS.MONITOR_UPDATED, this);
@@ -60,11 +52,11 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
             title: this.title,
             description: this.description,
             labels: this.labels,
-            modified: this.modified,
             overwriteStrategy: this.overwriteStrategy,
             logRotation: this.logRotation,
             lifeTime: this.lifeTime,
             allowedClientActions: this.allowedClientActions,
+            listenersAccess: this.listenersAccess,
         };
     };
 

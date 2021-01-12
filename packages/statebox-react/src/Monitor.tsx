@@ -1,12 +1,12 @@
 import React from "react";
 import { JobList } from "./JobsList";
-import { IMonitor } from "statebox-client";
+import { IMonitorClientState } from "statebox-client";
 
 export const Monitor = ({
     monitor,
     displayTitle,
 }: {
-    monitor: IMonitor;
+    monitor: IMonitorClientState;
     displayTitle: boolean;
 }) => {
     return (

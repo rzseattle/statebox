@@ -1,8 +1,9 @@
 import React from "react";
 import { Monitor } from "./Monitor";
-import {IMonitor} from "statebox-client";
+import {IMonitorMessage} from "statebox-common";
 
-export const MonitorList = ({ monitorList }: { monitorList: IMonitor[] }) => {
+
+export const MonitorList = ({ monitorList }: { monitorList: IMonitorMessage[] }) => {
     const monitorsCount = monitorList.length;
     return (
         <div>

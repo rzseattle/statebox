@@ -1,4 +1,5 @@
-import { MonitorOverwrite } from "../Monitor";
+import { IMonitorMessage } from "./IMonitorMessage";
+import { ILogKindMessage } from "./ILogKindMessage";
 
 export interface IMessage {
     type: "log" | "job";
@@ -10,22 +11,16 @@ export interface ILogMessage extends IMessage {
 }
 export interface IJobMessage extends IMessage {
     type: "job";
+    name: string;
     jobId: string;
-    title: string;
+    title?: string;
     description: string;
+    labels: string[];
     progress: { current: number; end: number };
     currentOperation: string;
-    logsPart: string[];
-    logsErrorPart: string[];
+    logsPart: ILogKindMessage[];
     done: boolean;
     error: boolean;
-    monitorData?: {
-        overwriteStrategy: MonitorOverwrite;
-        title: string;
-        description: string;
-        labels: string[];
-        authKey: string;
-        logRotation: number;
-        lifeTime: number;
-    };
+    monitorData?: IMonitorMessage;
+    data: any;
 }

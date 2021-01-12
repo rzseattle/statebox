@@ -1,9 +1,8 @@
-import { IActionMessage, IIdRequestMessage, IJobMessage, MonitorOverwrite } from "../common-interface/IMessage";
-
 import { IdRequestProcessor } from "./IdRequestProcessor";
 import { Monitor } from "../structure/Monitor";
 import { Job } from "../structure/Job";
 import { Monitors } from "../structure/Monitors";
+import { IActionMessage, IIdRequestMessage, IJobMessage, MonitorOverwrite } from "statebox-common";
 
 /**
  * Processing all incoming messages
@@ -57,7 +56,7 @@ export class MessageProcessor {
 
         // monitor is not found for job
         if (monitor === null) {
-            const newMonitor = new Monitor(message.monitorId, message.monitorData.labels, message.monitorData ?? {});
+            const newMonitor = new Monitor(message.monitorId, message.monitorData.labels, message.monitorData ?? null);
 
             const job = new Job(newMonitor.id, message.jobId, message.name, message.labels ?? [], message);
             this.monitorList.add(newMonitor);

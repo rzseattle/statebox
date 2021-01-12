@@ -1,14 +1,14 @@
 import * as NodeWS from "ws";
 import { nanoid } from "nanoid";
-import { Monitor, MonitorOverwrite } from "./Monitor";
-import { IJobData } from "./Job";
+import { Monitor } from "./Monitor";
+import { IJobMessage, MonitorOverwrite } from "statebox-common";
 
 interface IPendingRequest {
     elementType: "monitor" | "job";
     monitorId: string | null;
+    time: number;
     controlKey1: string;
     controlKey2: string;
-    time: number;
     resolve: (result: any) => any;
 }
 
@@ -18,7 +18,7 @@ export class Connection {
 
     private readonly url: string;
 
-    private reconnectTimeoutToClear: number = -1;
+    private reconnectTimeoutToClear: any = -1;
 
     private idRequestsPending: IPendingRequest[] = [];
     private onReconnectCallback: (() => any) | null = null;
@@ -68,7 +68,7 @@ export class Connection {
     public requestId = async (
         type: "monitor" | "job",
         monitor: Monitor | null = null,
-        job: IJobData | null = null,
+        job: IJobMessage | null = null,
     ): Promise<string> => {
         let monitorId: string | null = null;
         if (monitor && type === "job") {
@@ -86,8 +86,8 @@ export class Connection {
             this.idRequestsPending.push(request);
             this.send({
                 type: "id-request",
-                overwriteStrategy: monitor?.overwriteStrategy || MonitorOverwrite.CreateNew,
-                monitorLabels: monitor?.labels,
+                overwriteStrategy: monitor?.config.overwriteStrategy || MonitorOverwrite.CreateNew,
+                monitorLabels: monitor?.config.labels,
                 jobLabels: job?.labels || [],
                 elementType: request.elementType,
                 monitorId: request.monitorId,
@@ -96,8 +96,8 @@ export class Connection {
                 time: request.time,
                 data: {
                     monitor: {
-                        title: monitor?.title || "",
-                        description: monitor?.description || "",
+                        title: monitor?.config.title || "",
+                        description: monitor?.config.description || "",
                     },
                     job,
                 },
@@ -169,7 +169,6 @@ export class Connection {
                 if (this._reconnectTimeout === 0) {
                     reject(new Error("Status server connection is closed"));
                 } else {
-                    // @ts-ignore
                     this.reconnectTimeoutToClear = setTimeout(() => {
                         this.connect();
                     }, this._reconnectTimeout);
@@ -206,11 +205,10 @@ export class Connection {
                             this._reconnectTimeout / 1000 +
                             " s",
                     );
-                    // @ts-ignore
+
                     if (this._reconnectTimeout === 0) {
                         reject(new Error("Status server connection is closed"));
                     } else {
-                        // @ts-ignore
                         this.reconnectTimeoutToClear = setTimeout(() => {
                             this.connect();
                         }, this._reconnectTimeout);

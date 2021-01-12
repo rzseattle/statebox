@@ -1,11 +1,11 @@
 import { State } from "./State";
-import { IMonitor } from "./Interfaces";
+import { IMonitorClientState } from "./Interfaces";
 
 export class MessageProcessor {
     constructor(private state: State, private maxLogSize: number) {}
 
     public process(message: any) {
-        let monitor: IMonitor;
+        let monitor: IMonitorClientState;
         let index: number;
 
         switch (message.event) {
@@ -15,7 +15,7 @@ export class MessageProcessor {
                 );
                 monitor = this.state.monitors[index];
                 index = monitor.jobs.findIndex(
-                    (el) => el.id === message.job.id
+                    (el) => el.jobId === message.job.id
                 );
 
                 monitor.jobs[index] = {
@@ -50,7 +50,7 @@ export class MessageProcessor {
                 break;
             }
             case "init-info": {
-                message.monitors.forEach((el: IMonitor) => {
+                message.monitors.forEach((el: IMonitorClientState) => {
                     this.state.monitors.push(el);
                 });
                 break;
@@ -58,11 +58,15 @@ export class MessageProcessor {
         }
         for (const currMonitor of this.state.monitors) {
             for (const jobIndex in currMonitor.jobs) {
-                if (currMonitor.jobs[jobIndex].logs.length >= this.maxLogSize) {
-                    currMonitor.jobs[jobIndex].logs = currMonitor.jobs[
+                if (
+                    currMonitor.jobs[jobIndex].logsPart.length >=
+                    this.maxLogSize
+                ) {
+                    currMonitor.jobs[jobIndex].logsPart = currMonitor.jobs[
                         jobIndex
-                    ].logs.slice(
-                        currMonitor.jobs[jobIndex].logs.length - this.maxLogSize
+                    ].logsPart.slice(
+                        currMonitor.jobs[jobIndex].logsPart.length -
+                            this.maxLogSize
                     );
                 }
             }

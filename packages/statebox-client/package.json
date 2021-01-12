@@ -28,6 +28,7 @@
     "ws": "^7.4.2"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^4.11.1"
+    "@typescript-eslint/parser": "^4.11.1",
+    "statebox-common": "^1.0.0"
   }
 }

@@ -29,7 +29,9 @@ const createEnv = (
                 },
                 commChannel: {
                     send: mockSend,
-                    close: () => {},
+                    close: () => {
+                        // non empty
+                    },
                 },
             });
         }
@@ -69,7 +71,7 @@ describe("Multiplexing simple", () => {
             mockFn,
         );
 
-        //console.log(mockFn.mock.calls);
+        // console.log(mockFn.mock.calls);
         expect(mockFn).toBeCalledTimes(2 /* id + init*/ + 3 /* monitor and 2 jobs */);
     });
     it("Monitor match and one job is tracked", () => {

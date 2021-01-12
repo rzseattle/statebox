@@ -1,6 +1,6 @@
-import { IJobMessage, ILogKindMessage } from "../common-interface/IMessage";
 import { AbstractTrackableObject } from "./AbstractTrackableObject";
 import { STATEBOX_EVENTS } from "./StateboxEventsRouter";
+import { IJobMessage, ILogKindMessage } from "statebox-common";
 
 export interface IJob {
     id: string;

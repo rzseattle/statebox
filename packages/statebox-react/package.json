@@ -29,6 +29,7 @@
   "dependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "statebox-client": "^1.0.0"
+    "statebox-client": "^1.0.0",
+    "statebox-common": "^1.0.0"
   }
 }

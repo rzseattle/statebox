@@ -1,10 +1,11 @@
-import { IIdRequestMessage, MonitorOverwrite } from "../common-interface/IMessage";
+
 import { nanoid } from "nanoid";
 
 import { Monitor } from "../structure/Monitor";
 import { Job } from "../structure/Job";
 
 import { Monitors } from "../structure/Monitors";
+import {IIdRequestMessage, MonitorOverwrite} from "statebox-common";
 
 export class IdRequestProcessor {
     constructor(private monitorList: Monitors) {}
