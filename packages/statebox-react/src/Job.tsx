@@ -1,9 +1,15 @@
 import React, { useContext, useEffect } from "react";
-import { IJob, ILogMessage, LogMessageTypes } from "statebox-client";
 
 import { ConnectorContext } from "./StatusServerConnector";
+import {IJobMessage, ILogKindMessage, LogMessageTypes} from "statebox-common";
 
-export const Job = ({ job, monitorId }: { monitorId: string; job: IJob }) => {
+export const Job = ({
+    job,
+    monitorId,
+}: {
+    monitorId: string;
+    job: IJobMessage;
+}) => {
     const connector = useContext(ConnectorContext);
     return (
         <div style={{ padding: 5, backgroundColor: "white", marginTop: 10 }}>
@@ -25,7 +31,7 @@ export const Job = ({ job, monitorId }: { monitorId: string; job: IJob }) => {
             )}
 
             {job.currentOperation !== "" && <div>{job.currentOperation}</div>}
-            {job.logs.length > 0 && <Logs logs={job.logs} />}
+            {job.logsPart.length > 0 && <Logs logs={job.logsPart} />}
 
             {(job.progress.current != -1 || job.progress.end != -1) && (
                 <div>
@@ -47,7 +53,7 @@ interface IProgressBarProps {
     all: number;
 }
 
-const Logs = ({ logs }: { logs: ILogMessage[] }) => {
+const Logs = ({ logs }: { logs: ILogKindMessage[] }) => {
     const messagesEndRef = React.useRef<HTMLDivElement>();
 
     useEffect(() => {
