@@ -19,6 +19,6 @@ export interface IMonitorClientState {
     id: string;
     title: string;
     description: string;
-    jobs: IJobMessage[];
     modified: number;
+    jobs: Partial<IJobMessage>[];
 }

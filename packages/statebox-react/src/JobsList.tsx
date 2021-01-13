@@ -6,7 +6,7 @@ export const JobList = ({
     jobs,
     monitorId,
 }: {
-    jobs: IJobMessage[];
+    jobs: Partial<IJobMessage>[];
     monitorId: string;
 }) => {
     return (

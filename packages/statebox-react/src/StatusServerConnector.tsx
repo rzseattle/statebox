@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MonitorList } from "./MonitorList";
 import {
     StateboxClient,
-    IMonitor,
-    WEBSOCKET_STATUS,
+    WEBSOCKET_STATUS, IMonitorClientState,
 } from "statebox-client";
 
 export const ConnectorContext = React.createContext<StateboxClient>(null);
@@ -17,7 +16,7 @@ export const StatusServerConnector = ({
     trackedMonitorLabels: string[];
     trackedJobLabels?: string[];
     statusServerAddress: string;
-    children?: (data: IMonitor[], error: string) => React.ReactNode;
+    children?: (data: IMonitorClientState[], error: string) => React.ReactNode;
 }) => {
     const connector = React.useRef<StateboxClient>();
     const [lastMessage, setLastMessage] = useState([]);

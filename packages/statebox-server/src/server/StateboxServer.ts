@@ -7,8 +7,9 @@ import { Monitors } from "../structure/Monitors";
 import { GarbageCollector } from "../garbage-collector/GarbageCollector";
 import { Informator } from "../messaging/Informator";
 import { MessageProcessor } from "../messaging/MessageProcessor";
-import { STATEBOX_EVENTS, StateboxEventsRouter } from "../structure/StateboxEventsRouter";
+import { StateboxEventsRouter } from "../structure/StateboxEventsRouter";
 import { Logger } from "../lib/Logger";
+import { STATEBOX_EVENTS } from "statebox-common";
 
 /**
  * Statebox main object

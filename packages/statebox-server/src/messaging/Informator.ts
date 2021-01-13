@@ -1,8 +1,8 @@
 import { Monitor } from "../structure/Monitor";
 import { Job } from "../structure/Job";
 import { Multiplexer } from "./Multiplexer";
-import {STATEBOX_EVENTS} from "../structure/StateboxEventsRouter";
 import {Logger} from "../lib/Logger";
+import {STATEBOX_EVENTS} from "statebox-common";
 
 
 

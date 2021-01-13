@@ -1,8 +1,7 @@
 import { Job } from "./Job";
 import { AbstractTrackableObject } from "./AbstractTrackableObject";
-import { STATEBOX_EVENTS } from "./StateboxEventsRouter";
 import { compareLabels } from "../lib/CompareTools";
-import { IMonitorMessage, MonitorOverwrite } from "statebox-common";
+import { IMonitorMessage, MonitorOverwrite, STATEBOX_EVENTS } from "statebox-common";
 import { Operations } from "statebox-common";
 
 export interface IMonitorData extends IMonitorMessage {
@@ -24,7 +23,7 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
     listenersAccess: { accessToken?: string; jwtCompareData?: any };
     throttle?: number;
 
-    constructor(id: string, labels: string[], dataToConsume: IMonitorMessage = null) {
+    constructor(id: string, labels: string[], dataToConsume: Partial<IMonitorMessage> = null) {
         super();
         this.id = id;
         this.labels = labels;
@@ -33,7 +32,7 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
         }
     }
 
-    consumeInputData(monitorData: IMonitorMessage, triggerChangeEvent = true) {
+    consumeInputData(monitorData: Partial<IMonitorMessage>, triggerChangeEvent = true) {
         this.overwriteStrategy = monitorData.overwriteStrategy ?? this.overwriteStrategy;
         this.title = monitorData.title ?? this.title;
         this.description = monitorData.description ?? this.description;
@@ -68,7 +67,7 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
         this.runEvent(STATEBOX_EVENTS.JOB_NEW, { monitor: this, job });
     };
     public removeJob = (job: Job) => {
-        const index = this.jobs.findIndex((el) => el.id === job.id);
+        const index = this.jobs.findIndex((el) => el.jobId === job.jobId);
 
         this.runEvent(STATEBOX_EVENTS.JOB_DELETED, { monitor: this, job });
 
@@ -80,7 +79,7 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
     };
 
     public getJobById = (id: string): Job | null => {
-        const result = this.jobs.filter((job) => job.id === id);
+        const result = this.jobs.filter((job) => job.jobId === id);
         if (result.length === 1) {
             return result[0];
         } else {

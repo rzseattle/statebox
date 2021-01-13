@@ -1,57 +1,26 @@
 import { AbstractTrackableObject } from "./AbstractTrackableObject";
-import { STATEBOX_EVENTS } from "./StateboxEventsRouter";
-import { IJobMessage, ILogKindMessage } from "statebox-common";
+import { IJobMessage, ILogKindMessage, STATEBOX_EVENTS } from "statebox-common";
 
-export interface IJob {
-    id: string;
-    name: string;
-    title: string;
-    labels: string[];
-    description: string;
-    progress: { current: number; end: number };
-    currentOperation: string;
-    logs: ILogMessage[];
-    done: boolean;
-    data: any;
-    error: boolean;
-}
-
-export interface ILogMessage {
-    key: number;
-    type: LogMessageTypes;
-    msg: string;
-    time: number;
-}
-export enum LogMessageTypes {
-    DEBUG,
-    INFO,
-    NOTICE,
-    WARNING,
-    ERROR,
-    CRITICAL,
-    ALERT,
-    EMERGENCY,
-}
-
-export class Job extends AbstractTrackableObject implements IJob {
-    id: string;
+export class Job extends AbstractTrackableObject implements IJobMessage {
+    jobId: string;
     name: string;
     title = "";
     labels: string[];
     description = "";
     progress: { current: number; end: number } = { current: -1, end: -1 };
     currentOperation = "";
-    logs: ILogMessage[] = [];
+    logsPart: ILogKindMessage[] = [];
     done = false;
     data: any = null;
     error = false;
     monitorId: string;
     logRotation = 200;
+    type: "job";
 
     constructor(monitorId: string, id: string, name: string, labels: string[], toConsume: Partial<IJobMessage> = {}) {
         super();
         this.monitorId = monitorId;
-        this.id = id;
+        this.jobId = id;
         this.labels = labels;
         this.name = name;
         if (toConsume !== null) {
@@ -64,7 +33,7 @@ export class Job extends AbstractTrackableObject implements IJob {
         this.progress = jobData.progress ?? this.progress;
         this.currentOperation = jobData.currentOperation ?? this.currentOperation;
         if (jobData.logsPart && jobData.logsPart.length > 0) {
-            this.logs = this.prepareLogsArray(this.logs, jobData.logsPart, this.logRotation);
+            this.logsPart = this.prepareLogsArray(this.logsPart, jobData.logsPart, this.logRotation);
         }
         this.title = jobData.title ?? this.title;
         this.done = jobData.done ?? this.done;
@@ -77,11 +46,29 @@ export class Job extends AbstractTrackableObject implements IJob {
         }
     }
 
+    serialize = (): IJobMessage => {
+        return {
+            type: "job",
+            name: this.name,
+            jobId: this.jobId,
+            monitorId: this.monitorId,
+            title: this.title,
+            description: this.description,
+            labels: this.labels,
+            progress: this.progress,
+            currentOperation: this.currentOperation,
+            logsPart: this.logsPart,
+            done: this.done,
+            error: this.error,
+            data: this.data,
+        };
+    };
+
     private prepareLogsArray = (
-        currentLogsArray: ILogMessage[],
+        currentLogsArray: ILogKindMessage[],
         input: ILogKindMessage[],
         maxLength: number,
-    ): ILogMessage[] => {
+    ): ILogKindMessage[] => {
         let lastKey: number = currentLogsArray.length > 0 ? currentLogsArray[currentLogsArray.length - 1].key : 0;
         const identyfied = input.map((entry) => ({ ...entry, key: ++lastKey }));
 

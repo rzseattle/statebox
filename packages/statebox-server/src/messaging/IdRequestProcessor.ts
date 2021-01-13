@@ -1,11 +1,10 @@
-
 import { nanoid } from "nanoid";
 
 import { Monitor } from "../structure/Monitor";
 import { Job } from "../structure/Job";
 
 import { Monitors } from "../structure/Monitors";
-import {IIdRequestMessage, MonitorOverwrite} from "statebox-common";
+import { IIdRequestMessage, MonitorOverwrite } from "statebox-common";
 
 export class IdRequestProcessor {
     constructor(private monitorList: Monitors) {}
@@ -61,7 +60,7 @@ export class IdRequestProcessor {
                 }
 
                 if (job !== null) {
-                    id = job.id;
+                    id = job.jobId;
                 } else {
                     const newJob = new Job(
                         monitor.id,

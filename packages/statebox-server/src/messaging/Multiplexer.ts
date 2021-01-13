@@ -1,14 +1,18 @@
 import { IListenerData, Listeners } from "../structure/Listeners";
-import { IMonitorData, Monitor } from "../structure/Monitor";
+import { Monitor } from "../structure/Monitor";
 import { Monitors } from "../structure/Monitors";
 import { Job } from "../structure/Job";
-import { STATEBOX_EVENTS } from "../structure/StateboxEventsRouter";
 import { isSubset } from "../lib/CompareTools";
 import { Logger } from "../lib/Logger";
-
-interface IInitialMonitorState extends IMonitorData {
-    jobs: Job[];
-}
+import {
+    IInitMessage,
+    IJobDeleteMessage,
+    IJobUpdateMessage,
+    IMonitorDeleteMessage,
+    IMonitorInitInfo,
+    IMonitorUpdateMessage,
+    STATEBOX_EVENTS,
+} from "statebox-common";
 
 /**
  * Object with passign right infromation baset on selectors
@@ -51,37 +55,14 @@ export class Multiplexer {
                     monitor.jobs.forEach((el) => {
                         listener.tracked.jobLabels.forEach((listenersJobLabels) => {
                             if (isSubset(listenersJobLabels, el.labels)) {
-                                this.jobConnections.push([el.id, listener.id]);
+                                this.jobConnections.push([el.jobId, listener.id]);
                             }
                         });
                     });
                 }
             });
         });
-        // initing data in listener
-        const tmpMonitors: IInitialMonitorState[] = [];
-
-        const obj = {};
-        this.jobConnections.forEach((el) => {
-            obj[el[0]] = el[1];
-        });
-
-        this.monitorConnections
-            .filter((el) => el[1] === listener.id)
-            .forEach((connection) => {
-                const monitor = this.monitors.findById(connection[0]);
-                tmpMonitors.push({
-                    ...monitor.serialize(),
-                    jobs: monitor.jobs.filter((job) => obj[job.id] === listener.id),
-                });
-            });
-
-        listener.commChannel.send(
-            JSON.stringify({
-                event: "init-info",
-                monitors: tmpMonitors,
-            }),
-        );
+        this.sendInitInfoToListener(listener);
 
         // this.logger.log(this.jobConnections, "listener");
     };
@@ -114,11 +95,11 @@ export class Multiplexer {
             listener.tracked.monitorLabels.forEach((listenerMonitorLabels) => {
                 if (isSubset(listenerMonitorLabels, monitor.labels)) {
                     if (listener.tracked.jobLabels.length === 0) {
-                        this.jobConnections.push([job.id, listener.id]);
+                        this.jobConnections.push([job.jobId, listener.id]);
                     } else {
                         listener.tracked.jobLabels.forEach((listenerJobLabels) => {
                             if (job.labels.length === 0 || isSubset(listenerJobLabels, job.labels)) {
-                                this.jobConnections.push([job.id, listener.id]);
+                                this.jobConnections.push([job.jobId, listener.id]);
                             }
                         });
                     }
@@ -150,7 +131,34 @@ export class Multiplexer {
      * Removes job
      */
     public removeJob = (job: Job) => {
-        this.jobConnections = this.jobConnections.filter((el) => el[0] !== job.id);
+        this.jobConnections = this.jobConnections.filter((el) => el[0] !== job.jobId);
+    };
+
+    private sendInitInfoToListener = (listener: IListenerData) => {
+        // initing data in listener
+        const tmpMonitors: IMonitorInitInfo[] = [];
+
+        const obj = {};
+        this.jobConnections.forEach((el) => {
+            obj[el[0]] = el[1];
+        });
+
+        this.monitorConnections
+            .filter((el) => el[1] === listener.id)
+            .forEach((connection) => {
+                const monitor = this.monitors.findById(connection[0]);
+                tmpMonitors.push({
+                    ...monitor.serialize(),
+                    jobs: monitor.jobs.filter((job) => obj[job.jobId] === listener.id).map((job) => job.serialize()),
+                });
+            });
+
+        const message: IInitMessage = {
+            event: STATEBOX_EVENTS.LISTENER_INIT_INFO,
+            monitors: tmpMonitors,
+        };
+
+        listener.commChannel.send(JSON.stringify(message));
     };
 
     /**
@@ -159,26 +167,40 @@ export class Multiplexer {
      */
     public informListeners = (eventType: STATEBOX_EVENTS, monitor: Monitor, job: Job | null = null) => {
         // asume its job event
-        this.logger.log("              > informing " + eventType + " " + monitor.id);
+        this.logger.log("> informing " + eventType + " " + monitor.id);
+
+        let comm: IJobUpdateMessage | IMonitorUpdateMessage | IJobDeleteMessage | IMonitorDeleteMessage;
+
+        switch (eventType) {
+            case STATEBOX_EVENTS.JOB_UPDATED:
+                comm = { monitorId: monitor.id, event: eventType, jobId: job.jobId, data: job.serialize() };
+                break;
+            case STATEBOX_EVENTS.JOB_NEW:
+                comm = { monitorId: monitor.id, event: eventType, jobId: job.jobId, data: job.serialize() };
+                break;
+            case STATEBOX_EVENTS.JOB_DELETED:
+                comm = { monitorId: monitor.id, event: eventType, jobId: job.jobId };
+                break;
+            case STATEBOX_EVENTS.MONITOR_NEW:
+                comm = { monitorId: monitor.id, event: eventType, data: monitor.serialize() };
+                break;
+            case STATEBOX_EVENTS.MONITOR_UPDATED:
+                comm = { monitorId: monitor.id, event: eventType, data: monitor.serialize() };
+                break;
+            case STATEBOX_EVENTS.MONITOR_DELETED:
+                comm = { monitorId: monitor.id, event: eventType };
+                break;
+        }
 
         if (job !== null) {
             this.logger.log(eventType);
-            const comm = {
-                event: eventType,
-                monitorId: monitor.id,
-                job,
-            };
             this.jobConnections
-                .filter((el) => el[0] === job.id)
+                .filter((el) => el[0] === job.jobId)
                 .forEach((connection) => {
                     this.logger.log("sub job ---");
                     this.listeners.get(connection[1])?.commChannel.send(JSON.stringify(comm));
                 });
         } else {
-            const comm = {
-                event: eventType,
-                monitor,
-            };
             this.monitorConnections
                 .filter((el) => el[0] === monitor.id)
                 .forEach((connection) => {

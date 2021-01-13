@@ -1,14 +1,14 @@
 import React, { useContext, useEffect } from "react";
 
 import { ConnectorContext } from "./StatusServerConnector";
-import {IJobMessage, ILogKindMessage, LogMessageTypes} from "statebox-common";
+import { IJobMessage, ILogKindMessage, LogMessageTypes } from "statebox-common";
 
 export const Job = ({
     job,
     monitorId,
 }: {
     monitorId: string;
-    job: IJobMessage;
+    job: Partial<IJobMessage>;
 }) => {
     const connector = useContext(ConnectorContext);
     return (
@@ -75,7 +75,7 @@ const Logs = ({ logs }: { logs: ILogKindMessage[] }) => {
                 overflow: "auto",
             }}
         >
-            {logs.map((el: ILogMessage) => {
+            {logs.map((el: ILogKindMessage) => {
                 return (
                     <div
                         key={el.key}

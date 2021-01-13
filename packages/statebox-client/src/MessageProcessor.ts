@@ -1,57 +1,84 @@
 import { State } from "./State";
 import { IMonitorClientState } from "./Interfaces";
+import {
+    IInitMessage,
+    IJobDeleteMessage,
+    IJobUpdateMessage,
+    IMonitorDeleteMessage,
+    IMonitorUpdateMessage,
+    STATEBOX_EVENTS,
+} from "statebox-common";
 
 export class MessageProcessor {
     constructor(private state: State, private maxLogSize: number) {}
 
-    public process(message: any) {
+    public process(
+        message:
+            | IJobUpdateMessage
+            | IMonitorUpdateMessage
+            | IJobDeleteMessage
+            | IMonitorDeleteMessage
+            | IInitMessage
+    ) {
         let monitor: IMonitorClientState;
         let index: number;
 
         switch (message.event) {
-            case "job-update": {
+            case STATEBOX_EVENTS.JOB_UPDATED: {
                 index = this.state.monitors.findIndex(
                     (el) => el.id === message.monitorId
                 );
                 monitor = this.state.monitors[index];
                 index = monitor.jobs.findIndex(
-                    (el) => el.jobId === message.job.id
+                    (el) => el.jobId === message.jobId
                 );
 
                 monitor.jobs[index] = {
                     ...monitor.jobs[index],
-                    ...message.job,
+                    ...message.data,
                 };
 
                 break;
             }
-            case "job-new": {
+            case STATEBOX_EVENTS.JOB_NEW: {
                 index = this.state.monitors.findIndex(
                     (el) => el.id === message.monitorId
                 );
                 monitor = this.state.monitors[index];
-                monitor.jobs = [...monitor.jobs, message.job];
+                monitor.jobs = [...monitor.jobs, message.data];
                 break;
             }
-            case "monitor-new": {
+            case STATEBOX_EVENTS.MONITOR_NEW: {
                 index = this.state.monitors.findIndex(
                     (el) => el.id === message.monitorId
                 );
-                this.state.monitors.push(message.monitor);
+                this.state.monitors.push({
+                    id: message.data.id,
+                    title: message.data.title,
+                    description: message.data.description,
+                    modified: Date.now(),
+                    jobs: [],
+                });
                 break;
             }
-            case "monitor-remove": {
+            case STATEBOX_EVENTS.MONITOR_DELETED: {
                 index = this.state.monitors.findIndex(
-                    (el) => el.id === message.monitor.id
+                    (el) => el.id === message.monitorId
                 );
                 if (index !== -1) {
                     this.state.monitors.splice(index, 1);
                 }
                 break;
             }
-            case "init-info": {
-                message.monitors.forEach((el: IMonitorClientState) => {
-                    this.state.monitors.push(el);
+            case STATEBOX_EVENTS.LISTENER_INIT_INFO: {
+                message.monitors.forEach((el) => {
+                    this.state.monitors.push({
+                        id: el.id,
+                        title: el.title,
+                        description: el.description,
+                        modified: Date.now(),
+                        jobs: el.jobs,
+                    });
                 });
                 break;
             }
