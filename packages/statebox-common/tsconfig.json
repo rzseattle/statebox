@@ -1,7 +1,10 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "lib": ["es5", "es6", "dom"],
+        "target": "es5",
+        "module": "commonjs"
     },
     "include": ["./src/**/*", "./__tests__/**/*"]
 }
