@@ -1,6 +1,7 @@
 import React from "react";
 import { JobList } from "./JobsList";
 import { IMonitorClientState } from "statebox-client";
+import styles from "./Monitor.module.sass";
 
 export const Monitor = ({
     monitor,
@@ -10,13 +11,12 @@ export const Monitor = ({
     displayTitle: boolean;
 }) => {
     return (
-        <div>
+        <div className={styles.main}>
             {displayTitle && (
-                <div>
-                    <b>{monitor.title}</b>
-                </div>
+                <div className={styles.title}>{monitor.title}</div>
             )}
-            <JobList monitorId={monitor.id} jobs={monitor.jobs} />
+            {/*monitorId={monitor.id} */}
+            <JobList jobs={monitor.jobs} />
         </div>
     );
 };
