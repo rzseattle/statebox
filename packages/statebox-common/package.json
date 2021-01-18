@@ -29,7 +29,7 @@
         "prepare": "npm run clean && npm run build"
     },
     "files": [
-        "lib/**/*",
+        "dist/**/*",
         "src/**/*"
     ],
     "devDependencies": {

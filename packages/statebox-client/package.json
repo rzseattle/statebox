@@ -50,7 +50,7 @@
         "statebox-common": "^1.0.0"
     },
     "files": [
-        "lib/**/*",
+        "dist/**/*",
         "src/**/*"
     ]
 }
