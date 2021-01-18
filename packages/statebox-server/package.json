@@ -1,17 +1,39 @@
 {
     "name": "statebox-server",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "dist/main.js",
+    "main": "dist/main.d.ts",
+    "types": "",
     "license": "MIT",
+    "homepage": "https://github.com/rzseattle/statebox#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rzseattle/statebox"
+    },
+    "bugs": {
+        "url": "https://github.com/rzseattle/statebox/issues"
+    },
+    "author": {
+        "name": "Artur Kmera",
+        "email": "artur.kmera@3code.pl"
+    },
+    "engines": {
+        "node": ">=14.15.3"
+    },
+    "files": [
+        "lib/**/*",
+        "src/**/*"
+    ],
     "scripts": {
         "start": "node lib/main.js",
-        "clean": "rimraf lib coverage build tmp",
+        "clean": "rimraf dist coverage build tmp",
         "build": "tsc -p tsconfig.release.json",
         "build:watch": "tsc -w -p tsconfig.release.json",
         "lint": "eslint . --ext .ts,.tsx",
         "test": "jest --coverage",
         "test:watch": "jest --watch",
-        "dev": "ts-node-dev --respawn src/server.ts"
+        "dev": "ts-node-dev --respawn src/server.ts",
+        "prepare": "npm run clean && npm run build"
     },
     "devDependencies": {
         "@types/express": "^4.17.9",

@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.release.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib",
+    "outDir": "./dist",
   },
   "include": [
-    "src/**/*"
+    "./src/**/*"
   ]
 }

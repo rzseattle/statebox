@@ -1,5 +1,5 @@
 /.idea/
-/packages/*/lib
+/packages/*/dist
 packages/*/coverage
 /packages/*/node_modules
 /projects/*/yarn-error.log

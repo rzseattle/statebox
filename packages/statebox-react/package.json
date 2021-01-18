@@ -1,12 +1,32 @@
 {
     "name": "statebox-react",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "license": "MIT",
+    "homepage": "https://github.com/rzseattle/statebox#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rzseattle/statebox"
+    },
+    "bugs": {
+        "url": "https://github.com/rzseattle/statebox/issues"
+    },
+    "author": {
+        "name": "Artur Kmera",
+        "email": "artur.kmera@3code.pl"
+    },
+    "engines": {
+        "node": ">=14.15.3"
+    },
+    "files": [
+        "lib/**/*",
+        "src/**/*"
+    ],
     "scripts": {
         "start": "node lib/main.js",
-        "clean": "rimraf lib coverage build tmp",
-        "build": "tsc -p tsconfig.release.json",
+        "clean": "rimraf dist coverage build tmp",
+        "build": "rimraf dist && webpack",
         "build:watch": "tsc -w -p tsconfig.release.json",
         "lint": "eslint . --ext .ts,.tsx",
         "test": "jest --coverage",
@@ -14,7 +34,8 @@
         "dev": "npm-run-all -p storybook 'sass-modules -- --watch'",
         "storybook": "@sass-modules & start-storybook -p 6006",
         "build-storybook": "build-storybook",
-        "sass-modules": "tsm \"src/**/*.module.sass\""
+        "sass-modules": "tsm \"src/**/*.module.sass\"",
+        "prepare": "npm run clean && npm run build"
     },
     "devDependencies": {
         "@babel/core": "^7.12.10",
@@ -34,6 +55,7 @@
         "eslint-config-prettier": "^7.1.0",
         "eslint-plugin-jest": "^24.1.3",
         "jest": "^26.6.3",
+        "mini-css-extract-plugin": "^1.3.4",
         "npm-run-all": "^4.1.5",
         "prettier": "^2.2.1",
         "rimraf": "^3.0.2",
@@ -42,8 +64,11 @@
         "storybook-css-modules-preset": "^1.0.5",
         "style-loader": "^2.0.0",
         "ts-jest": "^26.4.4",
+        "ts-loader": "^8.0.14",
         "typed-scss-modules": "^3.4.1",
-        "typescript": "^4.1.3"
+        "typescript": "^4.1.3",
+        "webpack": "^5.15.0",
+        "webpack-cli": "^4.3.1"
     },
     "dependencies": {
         "node-sass": "^5.0.0",

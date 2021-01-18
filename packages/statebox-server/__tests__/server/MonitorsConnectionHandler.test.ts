@@ -1,4 +1,4 @@
-import { MonitorConnectionHandler } from "../../lib/server/MonitorsConnectionHandler";
+import { MonitorConnectionHandler } from "../../dist/server/MonitorsConnectionHandler";
 import * as NodeWS from "ws";
 import { Logger } from "../../src/lib/Logger";
 

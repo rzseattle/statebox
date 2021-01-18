@@ -3,7 +3,8 @@
     "compilerOptions": {
         "rootDir": "./src",
         "esModuleInterop": true,
-        "lib": ["dom", "ESNext"]
+        "lib": ["dom", "ESNext"],
+
     },
     "include": ["./src/**/*", "./__tests__/**/*"]
 }
