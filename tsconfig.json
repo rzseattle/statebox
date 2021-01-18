@@ -18,6 +18,6 @@
         "strictNullChecks": false,
         "types": ["jest", "node"],
         "incremental": false,
-        "module": "ESNext"
+        "module": "CommonJS"
     }
 }

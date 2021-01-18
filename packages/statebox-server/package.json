@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "dist/main.js",
     "types": "dist/main.d.ts",
+
     "license": "MIT",
     "homepage": "https://github.com/rzseattle/statebox#readme",
     "repository": {
