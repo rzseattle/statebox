@@ -2,8 +2,7 @@
     "name": "statebox-server",
     "version": "1.0.0",
     "main": "dist/main.js",
-    "main": "dist/main.d.ts",
-    "types": "",
+    "types": "dist/main.d.ts",
     "license": "MIT",
     "homepage": "https://github.com/rzseattle/statebox#readme",
     "repository": {
