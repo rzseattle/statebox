@@ -3,18 +3,17 @@ import React, { useEffect, useState } from "react";
 import { MonitorList } from "./MonitorList";
 import {
     StateboxClient,
-    WEBSOCKET_STATUS, IMonitorClientState,
+    WEBSOCKET_STATUS,
+    IMonitorClientState,
 } from "statebox-client";
 
 export const ConnectorContext = React.createContext<StateboxClient>(null);
 export const StatusServerConnector = ({
-    trackedMonitorLabels,
-    trackedJobLabels,
+    tracked,
     statusServerAddress,
     children,
 }: {
-    trackedMonitorLabels: string[];
-    trackedJobLabels?: string[];
+    tracked: string[];
     statusServerAddress: string;
     children?: (data: IMonitorClientState[], error: string) => React.ReactNode;
 }) => {
@@ -26,34 +25,38 @@ export const StatusServerConnector = ({
 
     useEffect(() => {
         (async () => {
-            // @ts-ignore
-            connector.current = new StateboxClient(statusServerAddress, {
-                tracked: {
-                    monitorLabels: trackedMonitorLabels,
-                    jobLabels: trackedJobLabels,
-                },
-            });
+            try {
+                connector.current = new StateboxClient(
+                    new WebSocket(statusServerAddress),
+                    -1,
+                    {
+                        tracked: tracked,
+                    }
+                );
 
-            connector.current.setMessageListener((msg) => {
-                console.log("message listeener not ready " + msg);
-                // setLastMessage((last) => {
-                //     return [...last, msg];
-                // });
-            });
-            connector.current.setChangeListener((msg) => {
-                setLastMessage([...msg]);
-            });
-            connector.current.setStatusListener((status) => {
-                if (
-                    status === WEBSOCKET_STATUS.ERROR ||
-                    status == WEBSOCKET_STATUS.NOT_CONNECTED
-                ) {
-                    setError(connector.current.getError());
-                } else {
-                    setError("");
-                }
-            });
-            await connector.current.connect();
+                connector.current.setMessageListener((msg) => {
+                    console.log("message listeener not ready " + msg);
+                    // setLastMessage((last) => {
+                    //     return [...last, msg];
+                    // });
+                });
+                connector.current.setChangeListener((msg) => {
+                    setLastMessage([...msg]);
+                });
+                connector.current.setStatusListener((status) => {
+                    if (
+                        status === WEBSOCKET_STATUS.ERROR ||
+                        status == WEBSOCKET_STATUS.NOT_CONNECTED
+                    ) {
+                        setError(connector.current.getError());
+                    } else {
+                        setError("");
+                    }
+                });
+                await connector.current.connect();
+            } catch (ex) {
+                console.log(ex);
+            }
             // setListenerId(await connector.current.getId());
         })();
     }, []);

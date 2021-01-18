@@ -5,16 +5,20 @@ import { render, screen } from "@testing-library/react";
 
 import { MonitorList } from "../src/MonitorList";
 
+import { monitorsMockList } from "../__mocks__/TestMonitorList";
 
-it("Renders empty monitors list", () => {
-    console.log("------------", "próbuje");
-    console.log(MonitorList, "próbuje");
-    render(<MonitorList monitorList={[]} title={"Test title"} />);
-    expect(screen.findByText("Test title")).toBeInTheDocument();
+// implementing scrollIntoView which is not implemented in jsdom
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
+describe("Test with static data", () => {
+    it("Renders empty monitors list", () => {
+        render(<MonitorList monitorList={[]} title={"Test title"} />);
+        expect(screen.getByText("Test title")).toBeInTheDocument();
+    });
+    it("Test all", () => {
+        render(
+            <MonitorList monitorList={monitorsMockList} title={"Test title"} />
+        );
+        expect(screen.getByText("Test title")).toBeInTheDocument();
+    });
 });
-
-// describe("React test", () => {
-//     it("React", () => {
-//         console.log("test");
-//     });
-// });

@@ -7,12 +7,7 @@ export interface IListenerData {
         login: string;
         password: string;
     };
-    tracked: {
-        monitorIds?: string[];
-        monitorLabels?: string[][];
-        jobIds?: string[];
-        jobLabels?: string[][];
-    };
+    tracked: string[];
     // upgradeDataInfo?: {
     //     monitorDataSend: Map<string, boolean>;
     //     jobsDataSend: Map<string, boolean>;

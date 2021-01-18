@@ -39,3 +39,62 @@ export const isSubset = (container: string[], toCheck: string[]): boolean => {
         return obj[el] !== undefined;
     });
 };
+
+const getEntriesToMach = (queryPart: string): string[][] => {
+    return queryPart.split("|").map((el) => el.split("&"));
+};
+
+export const matchQuery = (query: string, monitorLabels: string[], jobLabels: string[] | null): boolean => {
+    if (!query.match(/^[^/]+?\/[^/]+$/)) {
+        throw new Error("Wrong query format");
+    }
+    if (monitorLabels.length === 0) {
+        return false;
+    }
+
+    const [monitorPart, jobPart] = query.split("/").map((el) => getEntriesToMach(el));
+    let monitorLabelsPass = false;
+    let jobLabelsPass = false;
+
+    // adding wildcard match
+    const extendedMonitorLabels = ["*", ...monitorLabels];
+
+    for (const labels of monitorPart) {
+        if (isSubset(extendedMonitorLabels, labels)) {
+            monitorLabelsPass = true;
+            break;
+        }
+    }
+
+    if (jobLabels !== null) {
+        const extendedJobLabels = ["*", ...jobLabels];
+        for (const labels of jobPart) {
+            if (isSubset(extendedJobLabels, labels)) {
+                jobLabelsPass = true;
+                break;
+            }
+        }
+    } else {
+        jobLabelsPass = true;
+    }
+
+    return monitorLabelsPass && jobLabelsPass;
+};
+
+export const matchQueryAllOnlyMonitor = (queries: string[], monitorLabels: string[]): boolean => {
+    for (const query of queries) {
+        if (matchQuery(query, monitorLabels, null)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+export const matchQueryAll = (queries: string[], monitorLabels: string[], jobLabels: string[]): boolean => {
+    for (const query of queries) {
+        if (matchQuery(query, monitorLabels, jobLabels)) {
+            return true;
+        }
+    }
+    return false;
+};

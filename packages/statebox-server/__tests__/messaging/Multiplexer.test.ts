@@ -2,17 +2,9 @@ import { StateboxServer } from "../../src/server/StateboxServer";
 import { Monitor } from "../../src/structure/Monitor";
 import { Job } from "../../src/structure/Job";
 
-// 1 monitorLabels a
-// 2 monitorLabels a b
-// 3 monitorLabels a b c
-
-// listener a => 1
-// listener a b =>  1 2
-// listener a b c => 1 2 3
-
 const createEnv = (
     monitors: { labels: string[]; jobLabels: string[][] }[],
-    listenerLabels: { monitor: string[]; job: string[] },
+    listenerTracked: string[],
     mockSend: any,
     direction: "listenerFirst" | "listenerLast" = "listenerFirst",
 ) => {
@@ -23,10 +15,7 @@ const createEnv = (
         if (type === "listener") {
             server.listeners.add({
                 id: "testID",
-                tracked: {
-                    monitorLabels: listenerLabels.monitor.length > 0 ? [listenerLabels.monitor] : [],
-                    jobLabels: listenerLabels.job.length > 0 ? [listenerLabels.job] : [],
-                },
+                tracked: listenerTracked,
                 commChannel: {
                     send: mockSend,
                     close: () => {
@@ -54,22 +43,14 @@ describe("Multiplexing simple", () => {
     it("Monitor dont match", () => {
         const mockFn = jest.fn();
 
-        createEnv(
-            [{ labels: ["test"], jobLabels: [["job 1 label"], ["job 2 label"]] }],
-            { monitor: ["listener-label"], job: [] },
-            mockFn,
-        );
+        createEnv([{ labels: ["test"], jobLabels: [["job 1 label"], ["job 2 label"]] }], ["another-label/*"], mockFn);
 
         expect(mockFn).toBeCalledTimes(2 /* id + init*/);
     });
     it("Monitor match and all job are tracked", () => {
         const mockFn = jest.fn();
 
-        createEnv(
-            [{ labels: ["test"], jobLabels: [["job 1 label"], ["job 2 label"]] }],
-            { monitor: ["test"], job: [] },
-            mockFn,
-        );
+        createEnv([{ labels: ["test"], jobLabels: [["job 1 label"], ["job 2 label"]] }], ["test/*"], mockFn);
 
         // console.log(mockFn.mock.calls);
         expect(mockFn).toBeCalledTimes(2 /* id + init*/ + 3 /* monitor and 2 jobs */);
@@ -79,7 +60,8 @@ describe("Multiplexing simple", () => {
 
         createEnv(
             [{ labels: ["test"], jobLabels: [["job 1 label"], ["job 2 label"]] }],
-            { monitor: ["test"], job: ["job 1 label"] },
+
+            ["test/job 1 label"],
             mockFn,
         );
 
@@ -91,7 +73,7 @@ describe("Multiplexing simple", () => {
 
         createEnv(
             [{ labels: ["test"], jobLabels: [["job 1 label"], ["job 2 label"]] }],
-            { monitor: ["test"], job: ["job 1 label"] },
+            ["test/job 1 label"],
             mockFn,
             "listenerLast",
         );

@@ -5,10 +5,11 @@
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
     "scripts": {
-        "clean": "rimraf coverage build tmp",
+        "clean": "rimraf lib coverage build tmp",
         "build": "tsc -p tsconfig.release.json",
         "build:watch": "tsc -w -p tsconfig.release.json",
         "lint": "eslint . --ext .ts,.tsx",
+        "test": "jest --coverage",
         "test:watch": "jest --watch"
     },
     "devDependencies": {

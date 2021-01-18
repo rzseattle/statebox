@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node lib/main.js",
-    "clean": "rimraf coverage build tmp",
+    "clean": "rimraf lib coverage build tmp",
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
     "lint": "eslint . --ext .ts,.tsx",

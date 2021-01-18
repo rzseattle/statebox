@@ -6,13 +6,9 @@ export type ChangeListener = (structure: Array<IMonitorClientState>) => void;
 export type StatusListener = (status: WEBSOCKET_STATUS) => void;
 
 export interface IConfig {
-    authKey: string;
-    tracked: {
-        monitorIds: Array<string>;
-        monitorLabels: string[][];
-        jobIds: Array<string>;
-        jobLabels: string[][];
-    };
+    authPhrase?: string;
+    jwt?: string;
+    tracked: string[];
 }
 
 export interface IMonitorClientState {

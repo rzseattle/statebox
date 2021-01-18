@@ -23,34 +23,15 @@ export class StateboxClient {
     public actions;
 
     private config: IConfig = {
-        authKey: "",
-        tracked: {
-            monitorIds: [],
-            monitorLabels: [],
-            jobIds: [],
-            jobLabels: [],
-        },
+        tracked: [],
     };
 
     constructor(
         private connection: WebSocket,
         private _reconnectTimeout = 15000,
-        config: {
-            authKey?: string;
-            tracked?: {
-                monitorIds?: Array<string>;
-                monitorLabels?: string[][];
-                jobIds?: Array<string>;
-                jobLabels?: string[][];
-            };
-        }
+        config: IConfig
     ) {
-        if (config.authKey !== undefined) {
-            this.config.authKey = config.authKey;
-        }
-        if (config.tracked !== undefined) {
-            this.config.tracked = { ...this.config.tracked, ...config.tracked };
-        }
+        this.config = config;
 
         this.state = new State();
         this.processor = new MessageProcessor(this.state, this.maxLogSize);
@@ -140,16 +121,6 @@ export class StateboxClient {
             }
         });
     };
-
-    setTrackingIds(monitorIds: Array<string>, jobIds: Array<string> = []) {
-        this.config.tracked.monitorIds = monitorIds;
-        this.config.tracked.jobIds = jobIds;
-    }
-
-    setTrackingLabels(monitorLabels: string[][], jobLabels: string[][] = []) {
-        this.config.tracked.monitorLabels = monitorLabels;
-        this.config.tracked.jobLabels = jobLabels;
-    }
 
     public setMessageListener = (listener: MessageListener) => {
         this.messageListener = listener;

@@ -2,7 +2,7 @@ import { IListenerData, Listeners } from "../structure/Listeners";
 import { Monitor } from "../structure/Monitor";
 import { Monitors } from "../structure/Monitors";
 import { Job } from "../structure/Job";
-import { isSubset } from "../lib/CompareTools";
+import { matchQueryAll, matchQueryAllOnlyMonitor } from "../lib/CompareTools";
 import { Logger } from "../lib/Logger";
 import {
     IInitMessage,
@@ -49,19 +49,18 @@ export class Multiplexer {
     public addListener = (listener: IListenerData): any => {
         this.logger.log("Listener add " + listener.id);
         this.monitors.monitors.forEach((monitor) => {
-            listener.tracked.monitorLabels.forEach((listenerMonitorLabels) => {
-                if (isSubset(listenerMonitorLabels, monitor.labels)) {
-                    this.monitorConnections.push([monitor.id, listener.id]);
-                    monitor.jobs.forEach((el) => {
-                        listener.tracked.jobLabels.forEach((listenersJobLabels) => {
-                            if (isSubset(listenersJobLabels, el.labels)) {
-                                this.jobConnections.push([el.jobId, listener.id]);
-                            }
-                        });
-                    });
+            let monitorAdded = false;
+            monitor.jobs.forEach((el) => {
+                if (matchQueryAll(listener.tracked, monitor.labels, el.labels)) {
+                    this.jobConnections.push([el.jobId, listener.id]);
+                    if (!monitorAdded) {
+                        this.monitorConnections.push([monitor.id, listener.id]);
+                        monitorAdded = true;
+                    }
                 }
             });
         });
+
         this.sendInitInfoToListener(listener);
 
         // this.logger.log(this.jobConnections, "listener");
@@ -73,13 +72,11 @@ export class Multiplexer {
     public addMonitor = (monitor: Monitor) => {
         this.logger.log("------------------------ adding monitor ", monitor.labels);
         this.listeners.getAll().forEach((listener) => {
-            listener.tracked.monitorLabels.forEach((listenerMonitorLabels) => {
-                if (isSubset(listenerMonitorLabels, monitor.labels)) {
-                    // checking if monitor labels are tracked by listener
-                    this.logger.log("Monitor is now connected to listener: " + listener.id);
-                    this.monitorConnections.push([monitor.id, listener.id]);
-                }
-            });
+            if (matchQueryAllOnlyMonitor(listener.tracked, monitor.labels )) {
+                // checking if monitor labels are tracked by listener
+                this.logger.log("Monitor is now connected to listener: " + listener.id);
+                this.monitorConnections.push([monitor.id, listener.id]);
+            }
         });
     };
 
@@ -91,22 +88,10 @@ export class Multiplexer {
         this.logger.log("--------------- adding job", job.labels);
 
         this.listeners.getAll().forEach((listener) => {
-            // checking if job labels are tracked by listener
-            listener.tracked.monitorLabels.forEach((listenerMonitorLabels) => {
-                if (isSubset(listenerMonitorLabels, monitor.labels)) {
-                    if (listener.tracked.jobLabels.length === 0) {
-                        this.jobConnections.push([job.jobId, listener.id]);
-                    } else {
-                        listener.tracked.jobLabels.forEach((listenerJobLabels) => {
-                            if (job.labels.length === 0 || isSubset(listenerJobLabels, job.labels)) {
-                                this.jobConnections.push([job.jobId, listener.id]);
-                            }
-                        });
-                    }
-                }
-            });
+            if (matchQueryAll(listener.tracked, monitor.labels, job.labels)) {
+                this.jobConnections.push([job.jobId, listener.id]);
+            }
         });
-        // this.logger.log(this.jobConnections, "job");
     };
 
     /**

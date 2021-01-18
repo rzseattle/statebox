@@ -1,4 +1,5 @@
 import { compareLabels, intersectFilterHasThis, isSubset } from "../../src/lib/CompareTools";
+import { matchQuery } from "../../src/lib/CompareTools";
 
 describe("Update communicates tests", () => {
     it("Label comparator", () => {
@@ -32,5 +33,39 @@ describe("Update communicates tests", () => {
         expect(isSubset(["xxx", "yyy"], ["xxx", "yyy"])).toEqual(true);
         expect(isSubset(["xxx", "yyy"], ["yyy", "xxx"])).toEqual(true);
         expect(isSubset(["xxx", "yyy", "bbb"], ["yyy", "xxx"])).toEqual(true);
+    });
+
+    it("matchQuery", () => {
+        expect(() => {
+            matchQuery("", [], []);
+        }).toThrow(Error);
+        expect(() => {
+            matchQuery("abc", [], []);
+        }).toThrow(Error);
+
+        expect(() => {
+            matchQuery("abc/abc/abc", [], []);
+        }).toThrow(Error);
+
+        expect(matchQuery("*/*", [], [])).toEqual(false);
+        expect(matchQuery("*/*", ["xxx"], [])).toEqual(true);
+        expect(matchQuery("xxx/*", ["xxx"], [])).toEqual(true);
+        expect(matchQuery("xxx|yyy/*", ["xxx"], [])).toEqual(true);
+        expect(matchQuery("yyy/*", ["xxx"], [])).toEqual(false);
+        expect(matchQuery("*/*", ["xxx"], ["yyy"])).toEqual(true);
+        expect(matchQuery("*/yyy", ["xxx"], ["yyy"])).toEqual(true);
+        expect(matchQuery("xxx/yyy", ["xxx"], ["yyy"])).toEqual(true);
+        expect(matchQuery("xxx/*", ["xxx"], ["yyy"])).toEqual(true);
+        expect(matchQuery("xxx/bbb", ["xxx"], ["yyy"])).toEqual(false);
+        expect(matchQuery("bbb/yyy", ["xxx"], ["yyy"])).toEqual(false);
+        expect(matchQuery("xxx/yyy|ccc", ["xxx"], ["yyy"])).toEqual(true);
+        expect(matchQuery("xxx|bbb/yyy|ccc", ["xxx"], ["yyy"])).toEqual(true);
+        expect(matchQuery("xxx|bbb/yyy&ccc", ["xxx"], ["yyy"])).toEqual(false);
+        expect(matchQuery("xxx&bbb/yyy|ccc", ["xxx"], ["yyy"])).toEqual(false);
+        expect(matchQuery("xxx&bbb/yyy|ccc", ["xxx", "bbb"], ["yyy"])).toEqual(true);
+        expect(matchQuery("xxx&bbb/yyy&ccc", ["xxx", "bbb"], ["yyy", "ccc"])).toEqual(true);
+
+        expect(matchQuery("www|xxx&bbb/yyy&ccc", ["xxx", "bbb"], ["yyy", "ccc"])).toEqual(true);
+        expect(matchQuery("ccc|www&bbb/yyy&ccc", ["xxx", "bbb"], ["yyy", "ccc"])).toEqual(false);
     });
 });

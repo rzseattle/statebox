@@ -1,8 +1,8 @@
 import { StateboxClient } from "../src";
 import * as NodeWS from "ws";
-import { StateboxServer } from "../../statebox-server/lib/server/StateboxServer";
-import { Monitor } from "../../statebox-server/lib/structure/Monitor";
-import { Job } from "../../statebox-server/lib/structure/Job";
+import { StateboxServer } from "../../statebox-server/src/server/StateboxServer";
+import { Monitor } from "../../statebox-server/src/structure/Monitor";
+import { Job } from "../../statebox-server/src/structure/Job";
 
 const createEnv = (
     server: StateboxServer,
@@ -39,7 +39,7 @@ describe("StateboxClient", () => {
 
     it("Get id", async () => {
         const connection = new NodeWS("ws://localhost:4000");
-        const client = new StateboxClient(connection, -1, {});
+        const client = new StateboxClient(connection, -1, { tracked: [] });
         await client.connect();
         expect((await client.getId()).length).toBeGreaterThan(6);
         connection.close();
@@ -48,10 +48,7 @@ describe("StateboxClient", () => {
     it("New monitor and job", async (done) => {
         const connection = new NodeWS("ws://localhost:4000");
         const client = new StateboxClient(connection, -1, {
-            tracked: {
-                monitorLabels: [["test-label"]],
-                jobLabels: [["labels-job"]],
-            },
+            tracked: ["test-label/labels-job"],
         });
 
         await client.connect();
@@ -72,15 +69,10 @@ describe("StateboxClient", () => {
         connection.close();
     });
 
-
-
     it("Job update", async (done) => {
         const connection = new NodeWS("ws://localhost:4000");
         const client = new StateboxClient(connection, -1, {
-            tracked: {
-                monitorLabels: [["test-label"]],
-                jobLabels: [["labels-job"]],
-            },
+            tracked: ["test-label/labels-job"],
         });
 
         await client.connect();
