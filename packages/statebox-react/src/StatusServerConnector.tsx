@@ -7,12 +7,10 @@ import {
     IMonitorClientState,
 } from "statebox-client";
 
-export const StatusServerConnector = () =>{
-    return <div>sxxx</div>
-}
+
 
 export const ConnectorContext = React.createContext<StateboxClient>(null);
-export const StatusServerConnector1 = ({
+export const StatusServerConnector = ({
     tracked,
     statusServerAddress,
     children,

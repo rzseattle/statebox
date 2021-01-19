@@ -6,13 +6,21 @@ module.exports = {
     mode: "development",
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
+        alias: { react: require.resolve("react") }
     },
+    externals: {
+        // Use external version of React
+        // Use external version of React
+        react: "umd react",
+        "react-dom": "umd react-dom",
+    },
+    devtool: "source-map",
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "index.js",
-        library: "statebox-react",   // Important
-        libraryTarget: 'umd',   // Important
-        umdNamedDefine: true   // Important
+        library: "statebox-react", // Important
+        libraryTarget: "umd", // Important
+        umdNamedDefine: true, // Important
     },
     plugins: [new MiniCssExtractPlugin()],
     module: {
