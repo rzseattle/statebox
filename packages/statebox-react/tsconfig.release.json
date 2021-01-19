@@ -6,7 +6,9 @@
         "sourceMap": true,
         "declaration": true,
         "esModuleInterop": true,
-        "lib": ["dom", "ESNext"]
+        "lib": ["es5", "es2015.promise", "dom", "es2015"],
+        "target": "es5",
+        "module": "es2015"
     },
     "include": ["src/**/*"]
 }

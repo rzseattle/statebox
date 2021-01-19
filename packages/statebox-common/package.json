@@ -17,7 +17,7 @@
         "email": "artur.kmera@3code.pl"
     },
     "engines": {
-        "node": ">=14.15.3"
+        "node": ">=12"
     },
     "scripts": {
         "clean": "rimraf dist coverage build tmp",

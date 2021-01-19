@@ -17,7 +17,7 @@
         "email": "artur.kmera@3code.pl"
     },
     "engines": {
-        "node": ">=14.15.3"
+        "node": ">=12"
     },
     "files": [
         "dist/**/*",
@@ -27,7 +27,7 @@
         "start": "node lib/main.js",
         "clean": "rimraf dist coverage build tmp",
         "build": "rimraf dist && webpack",
-        "build:watch": "tsc -w -p tsconfig.release.json",
+        "build:watch": "webpack --watch",
         "lint": "eslint . --ext .ts,.tsx",
         "test": "jest --coverage",
         "test:watch": "jest --watch",

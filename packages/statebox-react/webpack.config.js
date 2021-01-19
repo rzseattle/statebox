@@ -3,13 +3,16 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     entry: "./src/index.ts",
-    mode: "production",
+    mode: "development",
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
     },
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "index.js",
+        library: "statebox-react",   // Important
+        libraryTarget: 'umd',   // Important
+        umdNamedDefine: true   // Important
     },
     plugins: [new MiniCssExtractPlugin()],
     module: {
