@@ -1,9 +1,8 @@
 {
     "name": "statebox-server",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "main": "dist/main.js",
     "types": "dist/main.d.ts",
-
     "license": "MIT",
     "homepage": "https://github.com/rzseattle/statebox#readme",
     "repository": {
@@ -55,7 +54,7 @@
     "dependencies": {
         "dotenv": "^8.2.0",
         "nanoid": "^3.1.20",
-        "statebox-common": "^1.0.0",
+        "statebox-common": "^0.0.1",
         "ws": "^7.4.1"
     },
     "prettier": {

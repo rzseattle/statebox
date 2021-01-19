@@ -1,6 +1,6 @@
 {
     "name": "statebox-client",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "license": "MIT",
@@ -47,7 +47,7 @@
     },
     "dependencies": {
         "@typescript-eslint/parser": "^4.11.1",
-        "statebox-common": "^1.0.0"
+        "statebox-common": "^0.0.1"
     },
     "files": [
         "dist/**/*",
