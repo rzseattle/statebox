@@ -80,13 +80,14 @@ export class Monitor {
         });
     }
 
-    public async createJob(data: IJobMessage): Promise<Job> {
+    public async createJob(name: string, data: Partial<IJobMessage> = {}): Promise<Job> {
         // waiting for monitor id
         await this.getId();
-        const jobId = await this.connection.requestId("job", this, data);
+        const jobId = await this.connection.requestId("job", this, { name, labels: data.labels ?? [] });
         return new Job(
             {
                 id: jobId,
+                name,
                 ...data,
             },
             this,

@@ -39,7 +39,7 @@ export class Job {
         this._isLoggingToConsole = value;
     }
 
-    constructor(data: { id: string } & IJobMessage, client: Monitor) {
+    constructor(data: { id: string } & Partial<IJobMessage>, client: Monitor) {
         this.client = client;
         this.id = data.id;
         this.description = data.description ?? "";

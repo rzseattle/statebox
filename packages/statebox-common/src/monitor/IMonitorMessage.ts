@@ -2,10 +2,10 @@ import { MonitorOverwrite } from "./MonitorOverwrite";
 
 export interface IMonitorMessage {
     id?: string;
-    title: string;
+    title?: string;
     description?: string;
     labels: string[];
-    listenersAccess: {
+    listenersAccess?: {
         accessToken?: string;
         jwtCompareData?: any;
     };
@@ -13,5 +13,5 @@ export interface IMonitorMessage {
     logRotation?: number;
     lifeTime?: number;
     throttle?: number;
-    allowedClientActions: number;
+    allowedClientActions?: number;
 }

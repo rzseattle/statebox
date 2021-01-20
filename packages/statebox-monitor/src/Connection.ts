@@ -1,7 +1,7 @@
 import * as NodeWS from "ws";
 import { nanoid } from "nanoid";
 import { Monitor } from "./Monitor";
-import { IJobMessage, MonitorOverwrite } from "statebox-common";
+import { MonitorOverwrite } from "statebox-common";
 
 interface IPendingRequest {
     elementType: "monitor" | "job";
@@ -47,6 +47,13 @@ export class Connection {
         }
     };
 
+    public close = async () => {
+        return new Promise((resolve) => {
+            this.connection.on("close", () => resolve(null));
+            this.connection.close();
+        });
+    };
+
     public send = (message: any) => {
         try {
             const str = JSON.stringify(message);
@@ -68,7 +75,7 @@ export class Connection {
     public requestId = async (
         type: "monitor" | "job",
         monitor: Monitor | null = null,
-        job: IJobMessage | null = null,
+        job: { name: string; labels: string[] } | null = null,
     ): Promise<string> => {
         let monitorId: string | null = null;
         if (monitor && type === "job") {
