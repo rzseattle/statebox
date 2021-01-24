@@ -1,5 +1,4 @@
 export const throttle = (func: CallableFunction, limit: number) => {
-    console.log("[Throttle] Initializet with throttle: " + limit);
     let lastFunc: any;
     let lastRan: number;
     return function () {

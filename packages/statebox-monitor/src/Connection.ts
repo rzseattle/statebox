@@ -2,6 +2,7 @@ import * as NodeWS from "ws";
 import { nanoid } from "nanoid";
 import { Monitor } from "./Monitor";
 import { MonitorOverwrite } from "statebox-common";
+import {Logger} from "./lib/Logger";
 
 interface IPendingRequest {
     elementType: "monitor" | "job";
@@ -23,8 +24,11 @@ export class Connection {
     private idRequestsPending: IPendingRequest[] = [];
     private onReconnectCallback: (() => any) | null = null;
 
+    private logger: Logger;
+
     constructor(url: string, private _reconnectTimeout = 15000) {
         this.url = url;
+        this.logger = new Logger();
     }
 
     get reconnectTimeout(): number {
@@ -64,9 +68,10 @@ export class Connection {
                 this.browserConnection.send(JSON.stringify(str));
             }
         } catch (er) {
+
             console.error("---------------------------------");
             console.error("Can't send message");
-            console.log(message);
+            this.logger.debug(message);
             console.trace();
             console.error("---------------------------------");
         }
@@ -129,7 +134,6 @@ export class Connection {
                     return false;
                 });
                 if (index !== -1) {
-                    console.log("Znalazłem i wykonuje");
                     this.idRequestsPending[index].resolve(data.id);
                     this.idRequestsPending.splice(index, 1);
                 } else {
@@ -139,8 +143,8 @@ export class Connection {
                 }
             }
         } catch (ex) {
-            console.log("Unexpected message: " + input);
-            console.log(ex);
+            this.logger.debug("Unexpected message: " + input);
+            this.logger.debug(ex);
         }
     };
 
@@ -148,7 +152,6 @@ export class Connection {
         return new Promise((resolve, reject) => {
             this.connection = new NodeWS(this.url, { timeout: 1000 });
             this.connection.on("open", () => {
-                console.log("connection is opened");
                 if (this.onReconnectCallback !== null) {
                     this.onReconnectCallback();
                 }
@@ -157,7 +160,7 @@ export class Connection {
             });
 
             this.connection.on("error", () => {
-                console.log("Status server connection error");
+                this.logger.debug("Status server connection error");
             });
 
             this.connection.on("message", (messageEvent: NodeWS.MessageEvent) => {
@@ -166,7 +169,7 @@ export class Connection {
             });
 
             this.connection.on("close", () => {
-                console.log(
+                this.logger.debug(
                     "Status server connection is closed [ " +
                         this.url +
                         " ] Trying to open in " +
@@ -187,7 +190,7 @@ export class Connection {
         return new Promise((resolve, reject) => {
             this.browserConnection = new window.WebSocket(this.url);
             this.browserConnection.addEventListener("open", () => {
-                console.log("connection is opened");
+                this.logger.debug("connection is opened");
                 if (this.onReconnectCallback !== null) {
                     this.onReconnectCallback();
                 }
@@ -196,7 +199,7 @@ export class Connection {
             });
 
             this.browserConnection.addEventListener("error", () => {
-                console.log("Status server connection error");
+                this.logger.debug("Status server connection error");
             });
 
             this.browserConnection.addEventListener("message", (e) => {
@@ -205,7 +208,7 @@ export class Connection {
 
             this.browserConnection.addEventListener("close", () => {
                 this.connection.on("close", () => {
-                    console.log(
+                    this.logger.debug(
                         "Status server connection is closed [ " +
                             this.url +
                             " ] Trying to open in " +

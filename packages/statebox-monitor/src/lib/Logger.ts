@@ -4,4 +4,9 @@ export class Logger {
             console.log(el, context);
         }
     }
+    debug(el: string, context: unknown = null) {
+        if (false) {
+            console.log(el, context);
+        }
+    }
 }

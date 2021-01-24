@@ -6,7 +6,7 @@ describe("Listeners structure & events test", () => {
 
         const spyAddListener = jest.spyOn(server.multiplexer, "addListener");
 
-        server.listeners.add({ id: "testID", tracked: {}, commChannel: { send: (_msg) => {}, close: () => {} } });
+        server.listeners.add({ id: "testID", tracked: [], commChannel: { send: (_msg) => {}, close: () => {} } });
         expect(server.listeners.getAll().size).toEqual(1);
         expect(spyAddListener).toHaveBeenCalled();
     });
@@ -16,7 +16,7 @@ describe("Listeners structure & events test", () => {
 
         const spyRemoveListener = jest.spyOn(server.multiplexer, "removeListener");
 
-        server.listeners.add({ id: "testID", tracked: {}, commChannel: { send: (_msg) => {}, close: () => {} } });
+        server.listeners.add({ id: "testID", tracked: [], commChannel: { send: (_msg) => {}, close: () => {} } });
 
         server.listeners.remove("testID");
 
