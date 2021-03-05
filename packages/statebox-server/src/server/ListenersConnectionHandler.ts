@@ -10,10 +10,14 @@ interface IIdWebsocket extends WebSocket {
 
 export class ListenersConnectionHandler {
     private server!: WebSocket.Server;
-    constructor(private logger: Logger, private port: number, private listeners: Listeners) {}
+    constructor(private logger: Logger, private _port: number, private listeners: Listeners) {}
+
+    get port(): number {
+        return this._port;
+    }
 
     public init = async () => {
-        this.server = new WebSocket.Server({ port: this.port });
+        this.server = new WebSocket.Server({ port: this._port });
 
         this.server.on("connection", (ws) => {
             // Generating new unique id for listener

@@ -3,10 +3,14 @@ import { Logger } from "../lib/Logger";
 
 export class MonitorConnectionHandler {
     private server!: WebSocket.Server;
-    constructor(private logger: Logger, private port: number, private messageProcessor) {}
+    constructor(private logger: Logger, private _port: number, private messageProcessor) {}
+
+    get port(): number {
+        return this._port;
+    }
 
     public init = async () => {
-        this.server = new WebSocket.Server({ port: this.port });
+        this.server = new WebSocket.Server({ port: this._port });
 
         this.server.on("connection", (ws) => {
             this.logger.log("New monitor connection");
