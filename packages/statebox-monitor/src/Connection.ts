@@ -1,8 +1,8 @@
 import * as NodeWS from "ws";
 import { nanoid } from "nanoid";
 import { Monitor } from "./Monitor";
-import { MonitorOverwrite } from "statebox-common";
-import {Logger} from "./lib/Logger";
+import { MonitorOverwrite, Logger } from "statebox-common";
+
 
 interface IPendingRequest {
     elementType: "monitor" | "job";
@@ -45,6 +45,7 @@ export class Connection {
 
     public connect = async () => {
         if (typeof window === "undefined") {
+
             return this.connectInNode();
         } else {
             return this.connectInBrowser();

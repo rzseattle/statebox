@@ -6,7 +6,7 @@ module.exports = {
     mode: "development",
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
-        alias: { react: require.resolve("react") }
+        alias: { react: path.resolve("./node_modules/react") }
     },
     externals: {
         // Use external version of React
