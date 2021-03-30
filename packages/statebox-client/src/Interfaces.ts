@@ -18,3 +18,8 @@ export interface IMonitorClientState {
     modified: number;
     jobs: Partial<IJobMessage>[];
 }
+
+
+export interface IUnifiedWebsockets {
+    send(message:string)
+}

@@ -1,7 +1,8 @@
 import { IJobMessage } from "statebox-common";
+import {IUnifiedWebsockets} from "./Interfaces";
 
 export class Actions {
-    constructor(private id: string, private connection: WebSocket) {}
+    constructor(private id: string, private connection: IUnifiedWebsockets) {}
 
     public clearJob = (monitorId: string, job: IJobMessage) => {
         // alert("cleruje jak holera" + job.id);

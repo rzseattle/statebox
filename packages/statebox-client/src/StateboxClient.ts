@@ -2,7 +2,7 @@ import { WEBSOCKET_CLOSE_REASONS, WEBSOCKET_STATUS } from "./SocketEnums";
 
 import {
     ChangeListener,
-    IConfig,
+    IConfig, IUnifiedWebsockets,
     MessageListener,
     StatusListener,
 } from "./Interfaces";
@@ -27,7 +27,7 @@ export class StateboxClient {
     };
 
     constructor(
-        private connection: WebSocket,
+        private connection: IUnifiedWebsockets,
         private _reconnectTimeout = 15000,
         config: IConfig
     ) {
