@@ -44,7 +44,13 @@ const getEntriesToMach = (queryPart: string): string[][] => {
     return queryPart.split("|").map((el) => el.split("&"));
 };
 
-export const matchQuery = (query: string, monitorLabels: string[], jobLabels: string[] | null): boolean => {
+export const matchQuery = (
+    query: string,
+    monitorLabels: string[],
+    jobLabels: string[] | null,
+    monitorId = null,
+    jobId = null,
+): boolean => {
     if (!query.match(/^[^/]+?\/[^/]+$/)) {
         throw new Error("Wrong query format");
     }
@@ -60,15 +66,31 @@ export const matchQuery = (query: string, monitorLabels: string[], jobLabels: st
     const extendedMonitorLabels = ["*", ...monitorLabels];
 
     for (const labels of monitorPart) {
+        //only id provided
+        if (labels.length === 1 && labels[0][0] === "#") {
+            if (labels[0] === "#" + monitorId) {
+                monitorLabelsPass = true;
+            }
+            break;
+        }
+
         if (isSubset(extendedMonitorLabels, labels)) {
             monitorLabelsPass = true;
             break;
         }
     }
 
-    if (jobLabels !== null) {
+    if (jobLabels !== null || (jobPart.length > 0 && jobPart[0][0] === "#")) {
         const extendedJobLabels = ["*", ...jobLabels];
         for (const labels of jobPart) {
+            //only id provided
+            if (labels.length === 1 && labels[0][0] === "#") {
+                if (labels[0] === "#" + jobId) {
+                    jobLabelsPass = true;
+                }
+                break;
+            }
+
             if (isSubset(extendedJobLabels, labels)) {
                 jobLabelsPass = true;
                 break;
@@ -90,9 +112,15 @@ export const matchQueryAllOnlyMonitor = (queries: string[], monitorLabels: strin
     return false;
 };
 
-export const matchQueryAll = (queries: string[], monitorLabels: string[], jobLabels: string[]): boolean => {
+export const matchQueryAll = (
+    queries: string[],
+    monitorLabels: string[],
+    jobLabels: string[],
+    _monitorId: string = null,
+    _jobId: string = null,
+): boolean => {
     for (const query of queries) {
-        if (matchQuery(query, monitorLabels, jobLabels)) {
+        if (matchQuery(query, monitorLabels, jobLabels, _monitorId, _jobId)) {
             return true;
         }
     }

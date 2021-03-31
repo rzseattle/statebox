@@ -51,7 +51,7 @@ export class Multiplexer {
         this.monitors.monitors.forEach((monitor) => {
             let monitorAdded = false;
             monitor.jobs.forEach((el) => {
-                if (matchQueryAll(listener.tracked, monitor.labels, el.labels)) {
+                if (matchQueryAll(listener.tracked, monitor.labels, el.labels, monitor.id, el.jobId )) {
                     this.jobConnections.push([el.jobId, listener.id]);
                     if (!monitorAdded) {
                         this.monitorConnections.push([monitor.id, listener.id]);
