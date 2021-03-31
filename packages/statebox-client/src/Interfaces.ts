@@ -20,6 +20,8 @@ export interface IMonitorClientState {
 }
 
 
-export interface IUnifiedWebsockets {
-    send(message:string)
+export interface IUnifiedWebsockets extends WebSocket{
+    // send(message:string)
+    // addEventListener(event:string, callback: (event: MessageEvent<any>) => void)
+    // close()
 }

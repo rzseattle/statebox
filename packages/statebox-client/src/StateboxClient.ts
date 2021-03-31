@@ -91,7 +91,7 @@ export class StateboxClient {
             this.connection.addEventListener("error", this.wsOnError);
 
             this.connection.addEventListener("close", (event) => {
-                this.wsOnClose(event);
+                this.wsOnClose(event as CloseEvent);
                 if (this._reconnectTimeout <= 0) {
                     reject(new Error("Status server connection is closed"));
                 }
