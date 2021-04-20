@@ -5,7 +5,7 @@ import { MonitorOverwrite, Logger } from "statebox-common";
 
 
 interface IPendingRequest {
-    elementType: "monitor" | "job";
+    elementType: "monitor" | "job" ;
     monitorId: string | null;
     time: number;
     controlKey1: string;
@@ -180,6 +180,7 @@ export class Connection {
                 if (this._reconnectTimeout === 0) {
                     reject(new Error("Status server connection is closed"));
                 } else {
+                    this.logger.error("Cant connect to: " + this.url );
                     this.reconnectTimeoutToClear = setTimeout(() => {
                         this.connect();
                     }, this._reconnectTimeout);
