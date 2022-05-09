@@ -7,8 +7,6 @@ import {
     IMonitorClientState,
 } from "statebox-client";
 
-
-
 export const ConnectorContext = React.createContext<StateboxClient>(null);
 export const StatusServerConnector = ({
     tracked,
@@ -27,38 +25,42 @@ export const StatusServerConnector = ({
 
     useEffect(() => {
         (async () => {
-            try {
-                connector.current = new StateboxClient(
-                    new WebSocket(statusServerAddress),
-                    -1,
-                    {
-                        tracked: tracked,
-                    }
-                );
+            if (connector.current === undefined) {
+                try {
+                    connector.current = new StateboxClient(
+                        new WebSocket(statusServerAddress),
+                        -1,
+                        {
+                            tracked: tracked,
+                        }
+                    );
 
-                connector.current.setMessageListener((msg) => {
-                    console.log("message listeener not ready " + msg);
-                    // setLastMessage((last) => {
-                    //     return [...last, msg];
-                    // });
-                });
-                connector.current.setChangeListener((msg) => {
-                    setLastMessage([...msg]);
-                });
-                connector.current.setStatusListener((status) => {
-                    if (
-                        status === WEBSOCKET_STATUS.ERROR ||
-                        status == WEBSOCKET_STATUS.NOT_CONNECTED
-                    ) {
-                        setError(connector.current.getError());
-                    } else {
-                        setError("");
-                    }
-                });
-                await connector.current.connect();
-            } catch (ex) {
-                setError(ex + "");
+                    connector.current.setMessageListener((msg) => {
+                        console.log(msg, "message listeener not ready ");
+                        // setLastMessage((last) => {
+                        //     return [...last, msg];
+                        // });
+                    });
+                    connector.current.setChangeListener((msg) => {
+                        setLastMessage([...msg]);
+
+                    });
+                    connector.current.setStatusListener((status) => {
+                        if (
+                            status === WEBSOCKET_STATUS.ERROR ||
+                            status == WEBSOCKET_STATUS.NOT_CONNECTED
+                        ) {
+                            setError(connector.current.getError());
+                        } else {
+                            setError("");
+                        }
+                    });
+                    await connector.current.connect();
+                } catch (ex) {
+                    setError(ex + "");
+                }
             }
+
             // setListenerId(await connector.current.getId());
         })();
     }, []);
@@ -72,6 +74,7 @@ export const StatusServerConnector = ({
             <ConnectorContext.Provider value={connector.current}>
                 <MonitorList monitorList={lastMessage} />
                 {error && <div>{error}</div>}
+                {/*{lastMessage.map((msg,index) => <div key={index}>{msg}</div>)}*/}
             </ConnectorContext.Provider>
         </div>
     );

@@ -14,7 +14,6 @@ export interface IMonitorMessage {
     lifeTime?: number;
     throttle?: number;
     allowedClientActions?: number;
-    doneJobs?: {
-        timeout: number
-    }
+    doneJobDeleteTimeout?:  number;
+
 }

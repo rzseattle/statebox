@@ -179,9 +179,11 @@ export class Multiplexer {
 
         if (job !== null) {
             this.logger.log(eventType);
+
             this.jobConnections
                 .filter((el) => el[0] === job.jobId)
                 .forEach((connection) => {
+                    this.logger.log("0000000000");
                     this.logger.log("sub job ---");
                     this.listeners.get(connection[1])?.commChannel.send(JSON.stringify(comm));
                 });

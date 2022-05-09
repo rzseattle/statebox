@@ -29,14 +29,19 @@ export class MessageProcessor {
                     (el) => el.id === message.monitorId
                 );
                 monitor = this.state.monitors[index];
-                index = monitor.jobs.findIndex(
-                    (el) => el.jobId === message.jobId
-                );
+                if (monitor == undefined) {
+                    console.error("Undefined monitor " + message.monitorId);
+                    console.log(this.state.monitors.map((m) => m.id));
+                } else {
+                    index = monitor.jobs.findIndex(
+                        (el) => el.jobId === message.jobId
+                    );
 
-                monitor.jobs[index] = {
-                    ...monitor.jobs[index],
-                    ...message.data,
-                };
+                    monitor.jobs[index] = {
+                        ...monitor.jobs[index],
+                        ...message.data,
+                    };
+                }
 
                 break;
             }
@@ -44,21 +49,34 @@ export class MessageProcessor {
                 index = this.state.monitors.findIndex(
                     (el) => el.id === message.monitorId
                 );
+
                 monitor = this.state.monitors[index];
-                monitor.jobs = [...monitor.jobs, message.data];
+                if (monitor == undefined) {
+                    console.error("Undefined monitor " + message.monitorId);
+                    console.log(this.state.monitors.map((m) => m.id));
+                } else {
+                    monitor.jobs = [
+                        ...(monitor.jobs !== undefined ? monitor.jobs : []),
+                        message.data,
+                    ];
+                }
+
                 break;
             }
             case STATEBOX_EVENTS.MONITOR_NEW: {
+                console.log("!!!!! to nie poszlo !!!");
                 index = this.state.monitors.findIndex(
-                    (el) => el.id === message.monitorId
+                    (el) => el.id === message.data.id
                 );
-                this.state.monitors.push({
-                    id: message.data.id,
-                    title: message.data.title,
-                    description: message.data.description,
-                    modified: Date.now(),
-                    jobs: [],
-                });
+                if (index === -1) {
+                    this.state.monitors.push({
+                        id: message.data.id,
+                        title: message.data.title,
+                        description: message.data.description,
+                        modified: Date.now(),
+                        jobs: [],
+                    });
+                }
                 break;
             }
             case STATEBOX_EVENTS.MONITOR_DELETED: {
@@ -71,6 +89,7 @@ export class MessageProcessor {
                 break;
             }
             case STATEBOX_EVENTS.LISTENER_INIT_INFO: {
+                console.log("!!! ------ init");
                 message.monitors.forEach((el) => {
                     this.state.monitors.push({
                         id: el.id,
