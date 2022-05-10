@@ -30,19 +30,42 @@ export class MessageProcessor {
                 );
                 monitor = this.state.monitors[index];
                 if (monitor == undefined) {
-                    console.error("Undefined monitor " + message.monitorId);
-                    console.log(this.state.monitors.map((m) => m.id));
-                } else {
+                    this.state.monitors.push({
+                        id: message.monitorId,
+                        title: null,
+                        description: null,
+                        modified: Date.now(),
+                        jobs: [],
+                    });
+                    monitor = this.state.monitors[
+                        this.state.monitors.length - 1
+                    ];
+                }
+                index = monitor.jobs.findIndex(
+                    (el) => el.jobId === message.jobId
+                );
+
+                monitor.jobs[index] = {
+                    ...monitor.jobs[index],
+                    ...message.data,
+                };
+
+                break;
+            }
+            case STATEBOX_EVENTS.JOB_DELETED: {
+                console.log("deletuje");
+                index = this.state.monitors.findIndex(
+                    (el) => el.id === message.monitorId
+                );
+                monitor = this.state.monitors[index];
+                if(monitor){
                     index = monitor.jobs.findIndex(
                         (el) => el.jobId === message.jobId
                     );
-
-                    monitor.jobs[index] = {
-                        ...monitor.jobs[index],
-                        ...message.data,
-                    };
+                    let copy = [...monitor.jobs]
+                    copy.splice(index, 1);
+                    monitor.jobs = copy;
                 }
-
                 break;
             }
             case STATEBOX_EVENTS.JOB_NEW: {
@@ -52,19 +75,25 @@ export class MessageProcessor {
 
                 monitor = this.state.monitors[index];
                 if (monitor == undefined) {
-                    console.error("Undefined monitor " + message.monitorId);
-                    console.log(this.state.monitors.map((m) => m.id));
-                } else {
-                    monitor.jobs = [
-                        ...(monitor.jobs !== undefined ? monitor.jobs : []),
-                        message.data,
+                    this.state.monitors.push({
+                        id: message.monitorId,
+                        title: null,
+                        description: null,
+                        modified: Date.now(),
+                        jobs: [],
+                    });
+                    monitor = this.state.monitors[
+                        this.state.monitors.length - 1
                     ];
                 }
+                monitor.jobs = [
+                    ...(monitor.jobs !== undefined ? monitor.jobs : []),
+                    message.data,
+                ];
 
                 break;
             }
             case STATEBOX_EVENTS.MONITOR_NEW: {
-                console.log("!!!!! to nie poszlo !!!");
                 index = this.state.monitors.findIndex(
                     (el) => el.id === message.data.id
                 );
@@ -89,7 +118,6 @@ export class MessageProcessor {
                 break;
             }
             case STATEBOX_EVENTS.LISTENER_INIT_INFO: {
-                console.log("!!! ------ init");
                 message.monitors.forEach((el) => {
                     this.state.monitors.push({
                         id: el.id,

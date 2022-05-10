@@ -1,7 +1,8 @@
 import * as NodeWS from "ws";
 import { nanoid } from "nanoid";
 import { Monitor } from "./Monitor";
-import { MonitorOverwrite, Logger } from "statebox-common";
+import { MonitorOverwrite } from "statebox-common";
+import {Logger} from "./lib/Logger";
 
 
 interface IPendingRequest {

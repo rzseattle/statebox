@@ -15,7 +15,6 @@ export class Monitors {
     public add = (monitor: Monitor) => {
         monitor.injectEventsTracker(this.eventsRouter);
         this.monitors.push(monitor);
-
         this.eventsRouter.pushEvent(STATEBOX_EVENTS.MONITOR_NEW, monitor);
     };
     public remove = (monitor: Monitor) => {

@@ -48,15 +48,17 @@ export class Multiplexer {
      */
     public addListener = (listener: IListenerData): any => {
         this.logger.log("Listener add " + listener.id);
+
         this.monitors.monitors.forEach((monitor) => {
-            let monitorAdded = false;
+
+            if(matchQueryAllOnlyMonitor(listener.tracked, monitor.labels)){
+                console.log("->Dodaje   " + monitor.title);
+                this.monitorConnections.push([monitor.id, listener.id]);
+            }
+
             monitor.jobs.forEach((el) => {
-                if (matchQueryAll(listener.tracked, monitor.labels, el.labels, monitor.id, el.jobId )) {
+                if (matchQueryAll(listener.tracked, monitor.labels, el.labels, monitor.id, el.jobId)) {
                     this.jobConnections.push([el.jobId, listener.id]);
-                    if (!monitorAdded) {
-                        this.monitorConnections.push([monitor.id, listener.id]);
-                        monitorAdded = true;
-                    }
                 }
             });
         });
@@ -72,7 +74,7 @@ export class Multiplexer {
     public addMonitor = (monitor: Monitor) => {
         this.logger.log("------------------------ adding monitor ", monitor.labels);
         this.listeners.getAll().forEach((listener) => {
-            if (matchQueryAllOnlyMonitor(listener.tracked, monitor.labels )) {
+            if (matchQueryAllOnlyMonitor(listener.tracked, monitor.labels)) {
                 // checking if monitor labels are tracked by listener
                 this.logger.log("Monitor is now connected to listener: " + listener.id);
                 this.monitorConnections.push([monitor.id, listener.id]);
@@ -142,6 +144,7 @@ export class Multiplexer {
             event: STATEBOX_EVENTS.LISTENER_INIT_INFO,
             monitors: tmpMonitors,
         };
+        console.log(message);
 
         listener.commChannel.send(JSON.stringify(message));
     };
@@ -177,21 +180,19 @@ export class Multiplexer {
                 break;
         }
 
+        this.logger.log("_____________________" + eventType);
         if (job !== null) {
-            this.logger.log(eventType);
-
             this.jobConnections
                 .filter((el) => el[0] === job.jobId)
                 .forEach((connection) => {
-                    this.logger.log("0000000000");
-                    this.logger.log("sub job ---");
+                    this.logger.log("job info ---");
                     this.listeners.get(connection[1])?.commChannel.send(JSON.stringify(comm));
                 });
         } else {
             this.monitorConnections
                 .filter((el) => el[0] === monitor.id)
                 .forEach((connection) => {
-                    this.logger.log("sub ----");
+                    this.logger.log("monitor info  ----");
                     this.listeners.get(connection[1])?.commChannel.send(JSON.stringify(comm));
                 });
         }
