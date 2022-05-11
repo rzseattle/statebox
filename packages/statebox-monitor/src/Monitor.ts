@@ -4,6 +4,21 @@ import { Connection } from "./Connection";
 import { extend } from "./lib/extends";
 import { IJobMessage, ILogKindMessage, IMonitorMessage, MonitorOverwrite } from "statebox-common";
 
+export type UpdateRequestConn = (
+    jobId: string,
+    data: {
+        title: string;
+        description: string;
+        progress: { current: number; end: number };
+        currentOperation: string;
+        logsPart: ILogKindMessage[];
+        error: boolean;
+        done: boolean;
+        data: any;
+    },
+    onSend: () => any,
+) => any;
+
 export class Monitor {
     private connection: Connection;
     private id: string | null = null;
@@ -23,20 +38,7 @@ export class Monitor {
         allowedClientActions: 0,
     };
 
-    public requestUpdate: (
-        jobId: string,
-        data: {
-            title: string;
-            description: string;
-            progress: { current: number; end: number };
-            currentOperation: string;
-            logsPart: ILogKindMessage[];
-            error: boolean;
-            done: boolean;
-            data: any;
-        },
-        onSend: () => any,
-    ) => any;
+    public requestUpdate: UpdateRequestConn;
 
     constructor(connection: Connection, options: IMonitorMessage) {
         this.connection = connection;
@@ -50,12 +52,22 @@ export class Monitor {
             this.isMonitorDataSend = false;
         });
 
-        if (this.config.throttle === 0) {
+        if (this.config.throttle === 0 || true) {
             this.requestUpdate = this._requestUpdate;
         } else {
             this.requestUpdate = throttle(this._requestUpdate, this.config.throttle);
         }
     }
+
+    public requestUpdaterProvider = (): UpdateRequestConn => {
+        let requester;
+        if (this.config.throttle === 0) {
+            requester = this._requestUpdate;
+        } else {
+            requester = throttle(this._requestUpdate, this.config.throttle);
+        }
+        return requester;
+    };
 
     public async getId() {
         return new Promise<string>((resolve, reject) => {

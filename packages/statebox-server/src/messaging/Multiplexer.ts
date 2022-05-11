@@ -144,7 +144,6 @@ export class Multiplexer {
             event: STATEBOX_EVENTS.LISTENER_INIT_INFO,
             monitors: tmpMonitors,
         };
-        console.log(message);
 
         listener.commChannel.send(JSON.stringify(message));
     };

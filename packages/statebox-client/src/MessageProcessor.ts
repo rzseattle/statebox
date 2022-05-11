@@ -10,7 +10,11 @@ import {
 } from "statebox-common";
 
 export class MessageProcessor {
-    constructor(private state: State, private maxLogSize: number) {}
+    constructor(
+        private state: State,
+        private maxLogSize: number,
+        private keepDone: number
+    ) {}
 
     public process(
         message:
@@ -37,9 +41,8 @@ export class MessageProcessor {
                         modified: Date.now(),
                         jobs: [],
                     });
-                    monitor = this.state.monitors[
-                        this.state.monitors.length - 1
-                    ];
+                    monitor =
+                        this.state.monitors[this.state.monitors.length - 1];
                 }
                 index = monitor.jobs.findIndex(
                     (el) => el.jobId === message.jobId
@@ -53,16 +56,31 @@ export class MessageProcessor {
                 break;
             }
             case STATEBOX_EVENTS.JOB_DELETED: {
-                console.log("deletuje");
                 index = this.state.monitors.findIndex(
                     (el) => el.id === message.monitorId
                 );
                 monitor = this.state.monitors[index];
-                if(monitor){
+
+                if (monitor) {
+                    if (this.keepDone > 0) {
+                        const doneJobs = monitor.jobs.filter(
+                            (job) => job.done
+                        ).length;
+                        if (doneJobs < this.keepDone) {
+                            break;
+                        }
+                        //finding oldest
+                        index = monitor.jobs.findIndex((job) => job.done);
+                        let copy = [...monitor.jobs];
+                        copy.splice(index, 1);
+                        monitor.jobs = copy;
+                        break;
+                    }
+
                     index = monitor.jobs.findIndex(
                         (el) => el.jobId === message.jobId
                     );
-                    let copy = [...monitor.jobs]
+                    let copy = [...monitor.jobs];
                     copy.splice(index, 1);
                     monitor.jobs = copy;
                 }
@@ -82,9 +100,8 @@ export class MessageProcessor {
                         modified: Date.now(),
                         jobs: [],
                     });
-                    monitor = this.state.monitors[
-                        this.state.monitors.length - 1
-                    ];
+                    monitor =
+                        this.state.monitors[this.state.monitors.length - 1];
                 }
                 monitor.jobs = [
                     ...(monitor.jobs !== undefined ? monitor.jobs : []),

@@ -9,6 +9,7 @@ export interface IConfig {
     authPhrase?: string;
     jwt?: string;
     tracked: string[];
+    keepDone?: number
 }
 
 export interface IMonitorClientState {

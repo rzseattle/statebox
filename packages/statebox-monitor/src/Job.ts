@@ -1,14 +1,15 @@
-import { Monitor } from "./Monitor";
+import {Monitor, UpdateRequestConn} from "./Monitor";
 import { IJobMessage, ILogKindMessage, LogMessageTypes } from "statebox-common";
 
 export class Job {
     private client: Monitor;
-    private progressFlag: { current: number; end: number } = { current: -1, end: -1 };
+    public progressFlag: { current: number; end: number } = { current: -1, end: -1 };
     private readonly id: string;
     private readonly title: string;
     private readonly description: string;
     private currentOperation = "";
     private logKindMessage: ILogKindMessage[] = [];
+    private updateRequestor: UpdateRequestConn;
 
     private readonly labels: string[];
     private dataToTransport: any = null;
@@ -24,6 +25,8 @@ export class Job {
 
     private _isDone = false;
     get isDone(): boolean {
+
+
         return this._isDone;
     }
     set isDone(value: boolean) {
@@ -41,6 +44,8 @@ export class Job {
 
     constructor(data: { id: string } & Partial<IJobMessage>, client: Monitor) {
         this.client = client;
+        //because every job should have own throttling request
+        this.updateRequestor = this.client.requestUpdaterProvider()
         this.id = data.id;
         this.description = data.description ?? "";
         this.title = data.title ?? "";
@@ -60,12 +65,13 @@ export class Job {
             data: this.dataToTransport,
         };
 
-        this.client.requestUpdate(this.id, data, () => {
+        this.updateRequestor(this.id, data, () => {
             this.logKindMessage = [];
         });
     }
 
     public progress = (current: number, end?: number) => {
+
         this.progressFlag = { current, end: end ? end : this.progressFlag.end };
         this.requestSend();
     };
