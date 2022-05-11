@@ -2,7 +2,8 @@ import { WEBSOCKET_CLOSE_REASONS, WEBSOCKET_STATUS } from "./SocketEnums";
 
 import {
     ChangeListener,
-    IConfig, IUnifiedWebsockets,
+    IConfig,
+    IUnifiedWebsockets,
     MessageListener,
     StatusListener,
 } from "./Interfaces";
@@ -11,6 +12,7 @@ import { State } from "./State";
 import { Actions } from "./Actions";
 
 export class StateboxClient {
+    private connection: IUnifiedWebsockets;
     private status: WEBSOCKET_STATUS;
     private connectionStatusListener: StatusListener = null;
     private messageListener: MessageListener = null;
@@ -27,14 +29,14 @@ export class StateboxClient {
     };
 
     constructor(
-        private connection: IUnifiedWebsockets,
+        private connectionProvider: () => IUnifiedWebsockets,
         private _reconnectTimeout = 15000,
         config: IConfig
     ) {
         this.config = config;
 
         this.state = new State();
-        this.processor = new MessageProcessor(this.state, this.maxLogSize);
+        this.processor = new MessageProcessor(this.state, this.maxLogSize, config.keepDone);
     }
 
     private wsOnOpen = async () => {
@@ -80,7 +82,7 @@ export class StateboxClient {
 
     connect = async (): Promise<boolean> => {
         return new Promise((resolve, reject) => {
-            //this.connection = this._websockets;
+            this.connection = this.connectionProvider();
 
             this.connection.addEventListener("open", () => {
                 this.wsOnOpen();

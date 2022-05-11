@@ -12,10 +12,12 @@ export const StatusServerConnector = ({
     tracked,
     statusServerAddress,
     children,
+    keepDone = -1,
 }: {
     tracked: string[];
     statusServerAddress: string;
     children?: (data: IMonitorClientState[], error: string) => React.ReactNode;
+    keepDone: number;
 }) => {
     const connector = React.useRef<StateboxClient>();
     const [lastMessage, setLastMessage] = useState([]);
@@ -28,22 +30,22 @@ export const StatusServerConnector = ({
             if (connector.current === undefined) {
                 try {
                     connector.current = new StateboxClient(
-                        new WebSocket(statusServerAddress),
-                        -1,
+                        () => new WebSocket(statusServerAddress),
+                        5000,
                         {
                             tracked: tracked,
+                            keepDone: keepDone,
                         }
                     );
 
                     connector.current.setMessageListener((msg) => {
-                        console.log(msg, "message listeener not ready ");
+                        //console.log(msg, "message listeener not ready ");
                         // setLastMessage((last) => {
                         //     return [...last, msg];
                         // });
                     });
                     connector.current.setChangeListener((msg) => {
                         setLastMessage([...msg]);
-
                     });
                     connector.current.setStatusListener((status) => {
                         if (
