@@ -38,7 +38,7 @@ export const StatusServerConnector = ({
                         }
                     );
 
-                    connector.current.setMessageListener((msg) => {
+                    connector.current.setMessageListener((_msg) => {
                         //console.log(msg, "message listeener not ready ");
                         // setLastMessage((last) => {
                         //     return [...last, msg];

@@ -52,7 +52,6 @@ export class Multiplexer {
         this.monitors.monitors.forEach((monitor) => {
 
             if(matchQueryAllOnlyMonitor(listener.tracked, monitor.labels)){
-                console.log("->Dodaje   " + monitor.title);
                 this.monitorConnections.push([monitor.id, listener.id]);
             }
 
@@ -154,7 +153,7 @@ export class Multiplexer {
      */
     public informListeners = (eventType: STATEBOX_EVENTS, monitor: Monitor, job: Job | null = null) => {
         // asume its job event
-        this.logger.log("> informing " + eventType + " " + monitor.id);
+        //this.logger.log("> informing " + eventType + " " + monitor.id);
 
         let comm: IJobUpdateMessage | IMonitorUpdateMessage | IJobDeleteMessage | IMonitorDeleteMessage;
 
@@ -179,19 +178,19 @@ export class Multiplexer {
                 break;
         }
 
-        this.logger.log("_____________________" + eventType);
+        //this.logger.log("_____________________" + eventType);
         if (job !== null) {
             this.jobConnections
                 .filter((el) => el[0] === job.jobId)
                 .forEach((connection) => {
-                    this.logger.log("job info ---");
+                    //this.logger.log("job info ---");
                     this.listeners.get(connection[1])?.commChannel.send(JSON.stringify(comm));
                 });
         } else {
             this.monitorConnections
                 .filter((el) => el[0] === monitor.id)
                 .forEach((connection) => {
-                    this.logger.log("monitor info  ----");
+                    //this.logger.log("monitor info  ----");
                     this.listeners.get(connection[1])?.commChannel.send(JSON.stringify(comm));
                 });
         }
