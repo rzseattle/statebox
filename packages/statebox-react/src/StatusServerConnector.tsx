@@ -17,7 +17,7 @@ export const StatusServerConnector = ({
     tracked: string[];
     statusServerAddress: string;
     children?: (data: IMonitorClientState[], error: string) => React.ReactNode;
-    keepDone: number;
+    keepDone?: number;
 }) => {
     const connector = React.useRef<StateboxClient>();
     const [lastMessage, setLastMessage] = useState([]);
