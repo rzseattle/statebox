@@ -71,6 +71,9 @@ export class Job {
         this.labels = data.labels ?? [];
     }
 
+    private timeout: number = -1;
+    private lastSend: number = -1;
+
     private requestSend() {
         const data = {
             title: this._title,
@@ -84,9 +87,23 @@ export class Job {
             data: this.dataToTransport,
         };
 
-        this.updateRequestor(this.id, data, () => {
-            this.logKindMessage = [];
-        });
+        const throttle = 300;
+        const calculated = this.lastSend - Date.now() + throttle;
+
+        clearTimeout(this.timeout);
+        this.lastSend = Date.now();
+        if (calculated < 0) {
+            this.updateRequestor(this.id, data, () => {
+                this.logKindMessage = [];
+            });
+        } else {
+            // @ts-ignore
+            this.timeout = setTimeout(() => {
+                this.updateRequestor(this.id, data, () => {
+                    this.logKindMessage = [];
+                });
+            }, calculated);
+        }
     }
 
     public progress = (current: number, end?: number) => {

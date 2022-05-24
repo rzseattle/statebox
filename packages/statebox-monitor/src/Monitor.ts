@@ -60,13 +60,7 @@ export class Monitor {
     }
 
     public requestUpdaterProvider = (): UpdateRequestConn => {
-        let requester;
-        if (this.config.throttle === 0) {
-            requester = this._requestUpdate;
-        } else {
-            requester = throttle(this._requestUpdate, this.config.throttle);
-        }
-        return requester;
+        return this._requestUpdate;
     };
 
     public async getId() {
