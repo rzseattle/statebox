@@ -41,6 +41,7 @@ export class Monitor {
     public requestUpdate: UpdateRequestConn;
 
     constructor(connection: Connection, options: IMonitorMessage) {
+
         this.connection = connection;
         this.config = extend(this.config, options) as IMonitorMessage;
 

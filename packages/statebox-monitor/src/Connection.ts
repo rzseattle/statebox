@@ -46,7 +46,6 @@ export class Connection {
 
     public connect = async () => {
         if (typeof window === "undefined") {
-
             return this.connectInNode();
         } else {
             return this.connectInBrowser();
@@ -161,7 +160,8 @@ export class Connection {
                 resolve(true);
             });
 
-            this.connection.on("error", () => {
+            this.connection.on("error", (e) => {
+                console.log(e);
                 this.logger.debug("Status server connection error");
             });
 
@@ -181,7 +181,8 @@ export class Connection {
                 if (this._reconnectTimeout === 0) {
                     reject(new Error("Status server connection is closed"));
                 } else {
-                    this.logger.error("Cant connect to: " + this.url );
+                    this.logger.error("Can't connect to 1  : " + this.url );
+
                     this.reconnectTimeoutToClear = setTimeout(() => {
                         this.connect();
                     }, this._reconnectTimeout);
@@ -202,7 +203,7 @@ export class Connection {
             });
 
             this.browserConnection.addEventListener("error", () => {
-                this.logger.debug("Status server connection error");
+                this.logger.debug("Status server connection error 1");
             });
 
             this.browserConnection.addEventListener("message", (e) => {
