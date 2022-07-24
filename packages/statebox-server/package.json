@@ -1,6 +1,6 @@
 {
     "name": "statebox-server",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "main": "dist/main.js",
     "types": "dist/main.d.ts",
     "license": "MIT",
@@ -54,7 +54,7 @@
     "dependencies": {
         "dotenv": "^8.2.0",
         "nanoid": "^3.3.4",
-        "statebox-common": "^0.0.8",
+        "statebox-common": "^0.0.9",
         "ws": "^7.4.1"
     },
     "prettier": {
