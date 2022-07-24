@@ -27,7 +27,7 @@ export class MonitorConnectionHandler {
                     console.log(message);
                     console.log("---------------");
                     // throw new Error("Error while processing message: " + message);
-                    console.log("---------------");
+                    console.log("--------------- ");
                 }
             });
         });
