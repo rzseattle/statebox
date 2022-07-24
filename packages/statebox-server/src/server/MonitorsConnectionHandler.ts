@@ -19,9 +19,15 @@ export class MonitorConnectionHandler {
                     // passing parsed message to message processor
                     this.messageProcessor.process(JSON.parse(message.toString()), ws);
                 } catch (e) {
+                    console.log("---------------");
+                    console.error("Error while processing message");
+                    console.error(e);
                     console.log(e.message);
-                    console.log(e);
-                    throw new Error("Error while processing message: " + message);
+                    console.log(e.toString());
+                    console.log(message);
+                    console.log("---------------");
+                    // throw new Error("Error while processing message: " + message);
+                    console.log("---------------");
                 }
             });
         });
