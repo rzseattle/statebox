@@ -118,10 +118,11 @@ export class Monitor {
         onSend: () => any,
     ) => {
         const message: IJobMessage = { type: "job", jobId, monitorId: this.id as string, ...data };
-        if (!this.isMonitorDataSend) {
+        // todo send only!! if monitor data lost on server
+        // if (!this.isMonitorDataSend) {
             message.monitorData = this.config;
             this.isMonitorDataSend = true;
-        }
+        // }
         this.connection.send(message);
         onSend();
     };
