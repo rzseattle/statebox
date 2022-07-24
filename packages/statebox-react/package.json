@@ -1,6 +1,6 @@
 {
     "name": "statebox-react",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "license": "MIT",
@@ -74,7 +74,7 @@
         "node-sass": "^5.0.0",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
-        "statebox-client": "^0.0.6",
-        "statebox-common": "^0.0.6"
+        "statebox-client": "^0.0.7",
+        "statebox-common": "^0.0.7"
     }
 }
