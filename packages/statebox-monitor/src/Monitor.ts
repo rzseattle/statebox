@@ -119,10 +119,11 @@ export class Monitor {
     ) => {
         const message: IJobMessage = { type: "job", jobId, monitorId: this.id as string, ...data };
         // todo send only!! if monitor data lost on server
-        // if (!this.isMonitorDataSend) {
+        // eslint-disable-next-line no-constant-condition
+        if ( true || !this.isMonitorDataSend) {
             message.monitorData = this.config;
             this.isMonitorDataSend = true;
-        // }
+        }
         this.connection.send(message);
         onSend();
     };
