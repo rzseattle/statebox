@@ -1,6 +1,6 @@
 {
     "name": "statebox-react",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "license": "MIT",
@@ -74,8 +74,8 @@
     "dependencies": {
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "statebox-client": "^0.0.10",
-        "statebox-common": "^0.0.10"
+        "statebox-client": "^0.0.11",
+        "statebox-common": "^0.0.11"
     },
     "gitHead": "a0091514a8c68369631007814f55352442706d84"
 }
