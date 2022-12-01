@@ -63,5 +63,6 @@
         "printWidth": 120,
         "arrowParens": "always",
         "trailingComma": "all"
-    }
+    },
+    "gitHead": "a0091514a8c68369631007814f55352442706d84"
 }
