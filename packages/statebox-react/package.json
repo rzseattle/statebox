@@ -75,7 +75,8 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "statebox-client": "^0.0.12",
-        "statebox-common": "^0.0.12"
+        "statebox-common": "^0.0.12",
+        "tslib": "~2.5.2"
     },
     "gitHead": "a0091514a8c68369631007814f55352442706d84"
 }
