@@ -1,3 +1,3 @@
-export interface IUpdateMessage{
+export interface IUpdateMessage {
     monitorId: string;
 }

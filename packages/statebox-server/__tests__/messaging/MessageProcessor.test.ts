@@ -2,7 +2,7 @@ import { StateboxServer } from "../../src/server/StateboxServer";
 
 import { Monitor } from "../../src/structure/Monitor";
 import { Job } from "../../src/structure/Job";
-import {IJobMessage, MonitorOverwrite} from "statebox-common";
+import { IJobMessage, MonitorOverwrite } from "statebox-common";
 
 describe("Update communicates tests", () => {
     const fakeBackChannel = { send: jest.fn() };

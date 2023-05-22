@@ -1,4 +1,4 @@
-import {IMessage} from "../monitor/IMessage";
+import { IMessage } from "../monitor/IMessage";
 
 export interface IActionMessage extends IMessage {
     subjectType: string;

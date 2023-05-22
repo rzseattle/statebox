@@ -1,7 +1,7 @@
 import { Monitor } from "./Monitor";
-import {  StateboxEventsRouter } from "./StateboxEventsRouter";
+import { StateboxEventsRouter } from "./StateboxEventsRouter";
 import { compareLabels } from "../lib/CompareTools";
-import {STATEBOX_EVENTS} from "statebox-common";
+import { STATEBOX_EVENTS } from "statebox-common";
 
 export class Monitors {
     monitors: Monitor[] = [];

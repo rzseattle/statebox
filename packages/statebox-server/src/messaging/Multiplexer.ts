@@ -50,8 +50,7 @@ export class Multiplexer {
         this.logger.log("Listener add " + listener.id);
 
         this.monitors.monitors.forEach((monitor) => {
-
-            if(matchQueryAllOnlyMonitor(listener.tracked, monitor.labels)){
+            if (matchQueryAllOnlyMonitor(listener.tracked, monitor.labels)) {
                 this.monitorConnections.push([monitor.id, listener.id]);
             }
 

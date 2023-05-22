@@ -87,7 +87,6 @@ export class StateboxServer {
         this.logger.log("Monitors are listened as " + this.monitorsConnectionHandler.port);
         await this.listenersConnectionHandler.init();
         this.logger.log("Listeners are listened as " + this.listenersConnectionHandler.port);
-
     };
 
     public close = async () => {

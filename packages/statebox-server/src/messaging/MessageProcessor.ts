@@ -56,13 +56,11 @@ export class MessageProcessor {
 
         // monitor is not found for job
         if (monitor === null) {
-
             const newMonitor = new Monitor(message.monitorId, message.monitorData.labels, message.monitorData ?? null);
 
             const job = new Job(newMonitor.id, message.jobId, message.name, message.labels ?? [], message);
             this.monitorList.add(newMonitor);
             newMonitor.addJob(job);
-
         } else {
             if (message.monitorData) {
                 monitor.consumeInputData(message.monitorData);
@@ -75,8 +73,7 @@ export class MessageProcessor {
                 monitor.addJob(job);
             } else {
                 job.consumeInputData(message);
-                if(message.done){
-
+                if (message.done) {
                     monitor.removeJob(job);
                 }
             }
