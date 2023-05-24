@@ -1,6 +1,7 @@
 import * as http from "http";
 import url from "url";
 import { Connection, Monitor } from "statebox-monitor";
+import React from "react";
 
 console.log("I'm server app");
 
@@ -24,13 +25,27 @@ const requestListener = function (req, res) {
       case "/progress":
         const job = await monitor.createJob("test", { labels: ["dupa"] });
 
-        job.log("dupa");
+        job.log("This is log");
+        break;
+      case "/logs":
+        break;
+      case "/manyClean":
+        break;
+      case "/manyPreserve":
+        break;
+      case "/current":
+        break;
+
+      case "/noConnection":
+        break;
+      case "/brokeConnection":
         break;
       case "/cleanup":
         await monitor.cleanup();
         break;
     }
   })();
+
 
   res.end(q.pathname);
 };

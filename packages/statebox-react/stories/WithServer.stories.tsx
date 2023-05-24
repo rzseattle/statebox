@@ -18,20 +18,30 @@ export default {
   },
 } as Meta;
 
-const Template: Story<IMonitorListProps> = (args) => (
+const TestButton = ({title, path}:{title: string, path: string}) => {
+  return <>
+    <button onClick={() => fetch("http://localhost:8080" + path)}>
+      {title}
+    </button>
+    &nbsp;
+  </>
+}
+
+const Template: Story<IMonitorListProps> = (_args) => (
   <StatusServerConnector
     tracked={["*/*"]}
     statusServerAddress={"ws://localhost:3012"}
   >
     {(data, error) => (
       <div>
-        <button onClick={() => fetch("http://localhost:8080/cleanup")}>
-          clear
-        </button>
-        &nbsp;
-        <button onClick={() => fetch("http://localhost:8080/progress")}>
-          progress
-        </button>
+        <TestButton title={"Clean"} path={"/cleanup"} />
+        <TestButton title={"Progress"} path={"/progress"} />
+        <TestButton title={"Logs"} path={"/logs"} />
+        <TestButton title={"Many jobs clean"} path={"/manyClean"} />
+        <TestButton title={"Many jobs preserve"} path={"/manyPreserve"} />
+        <TestButton title={"Current job"} path={"/current"} />
+        <br/>
+        <MonitorList monitorList={data} />
         <pre>{JSON.stringify(data, null, 2)}</pre>
         <hr />
         {error}
