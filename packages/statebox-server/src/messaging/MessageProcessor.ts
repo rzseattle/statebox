@@ -24,10 +24,9 @@ export class MessageProcessor {
             this.processJobMessage(message as IJobMessage);
         } else if (message.type === "id-request") {
             this.processIdRequestMessage(message as IIdRequestMessage, backChannel);
+        } else if (message.type === "action") {
+            this.processActionMessage(message as IActionMessage);
         }
-        // else if (message.type === "action") {
-        //     this.processActionMessage(message as IActionMessage);
-        // }
     };
 
     private processIdRequestMessage = (
@@ -80,31 +79,44 @@ export class MessageProcessor {
         }
     };
 
-    // private processActionMessage = (message: IActionMessage) => {
-    //     const monitor = this.monitorList.findById(message.monitorId);
-    //
-    //     if (monitor) {
-    //         if (message.subjectType === "monitor") {
-    //             if (message.action === "remove") {
-    //                 this.monitorList.remove(monitor);
-    //             }
-    //             if (message.action === "cleanup") {
-    //                 monitor.getJobs().forEach((job) => {
-    //                     monitor.removeJob(job);
-    //                 });
-    //             }
-    //         } else if (message.subjectType === "job") {
-    //             const job = monitor.getJobById(message.subjectId);
-    //
-    //             if (job) {
-    //                 if (message.action === "remove") {
-    //                     monitor.removeJob(job);
-    //                 }
-    //                 if (message.action === "cleanup") {
-    //                     job.cleanup();
-    //                 }
-    //             }
-    //         }
-    //     }
-    // };
+    private processActionMessage = (message: IActionMessage) => {
+        console.log(message);
+        if (message.subjectType === "monitor") {
+            const monitor = this.monitorList.findById(message.subjectId);
+            if (monitor !== null) {
+                if (message.action === "cleanup") {
+                    monitor.getJobs().forEach((job) => {
+                        monitor.removeJob(job);
+                    });
+                }
+            } else {
+                console.log("monitor not found");
+            }
+        }
+        // const monitor = this.monitorList.findById(message.monitorId);
+        //
+        // if (monitor) {
+        //     if (message.subjectType === "monitor") {
+        //         if (message.action === "remove") {
+        //             this.monitorList.remove(monitor);
+        //         }
+        //         if (message.action === "cleanup") {
+        //             monitor.getJobs().forEach((job) => {
+        //                 monitor.removeJob(job);
+        //             });
+        //         }
+        //     } else if (message.subjectType === "job") {
+        //         const job = monitor.getJobById(message.subjectId);
+        //
+        //         if (job) {
+        //             if (message.action === "remove") {
+        //                 monitor.removeJob(job);
+        //             }
+        //             if (message.action === "cleanup") {
+        //                 job.cleanup();
+        //             }
+        //         }
+        //     }
+        // }
+    };
 }

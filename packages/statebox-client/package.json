@@ -27,7 +27,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "prepare": "npm run clean && npm run build"
+    "prepare": "npm run clean && npm run build",
+    "_phase:build": "npm run build"
   },
   "devDependencies": {
     "@types/jest": "^26.0.19",

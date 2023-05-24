@@ -26,7 +26,7 @@
       /**
        * Normally Rush requires that each project's package.json has a \"scripts\" entry matching the phase name. To disable this check, set \"ignoreMissingScript\" to true.
        */
-      "ignoreMissingScript": true,
+      "ignoreMissingScript": false,
 
       /**
        * By default, Rush returns a nonzero exit code if errors or warnings occur during a command. If this option is set to \"true\", Rush will return a zero exit code if warnings occur during the execution of this phase.
@@ -56,6 +56,16 @@
       "autoinstallerName": "rush-prettier",
       // This will invoke common/autoinstallers/rush-prettier/node_modules/.bin/pretty-quick
       "shellCommand": "pretty-quick --staged"
+    },
+    {
+      "name": "dev",
+      "commandKind": "bulk",
+      "summary": "Used to dev.",
+      "safeForSimultaneousRushProcesses": false,
+      "enableParallelism": true,
+      "ignoreMissingScript": true
+      // This will invoke common/autoinstallers/rush-prettier/node_modules/.bin/pretty-quick
+
     }
 
 

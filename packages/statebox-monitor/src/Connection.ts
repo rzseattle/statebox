@@ -71,8 +71,9 @@ export class Connection {
             console.error("---------------------------------");
             console.error("Can't send message");
             this.logger.debug(message);
+            this.logger.debug(er);
             console.trace();
-            console.error("---------------------------------");
+            console.error("111---------------------------------");
         }
     };
 
