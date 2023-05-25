@@ -1,7 +1,6 @@
 import * as http from "http";
 import url from "url";
 import { Connection, Monitor } from "statebox-monitor";
-import React from "react";
 
 console.log("I'm server app");
 
@@ -17,35 +16,82 @@ let monitor;
 
 const requestListener = function (req, res) {
   res.writeHead(200);
-
   const q = url.parse(req.url, true);
   (async () => {
-    console.log(q.pathname);
-    switch (q.pathname) {
-      case "/progress":
-        const job = await monitor.createJob("test", { labels: ["dupa"] });
+    try {
+      await monitor.updateId();
+      const job = await monitor.createJob("test", { labels: ["dupa"] });
+      switch (q.pathname) {
+        case "/progress":
+          job.progress(2, 100);
+          break;
+        case "/logs":
+          for (let i = 0; i < 10; i++) {
+            setTimeout(() => {
+              job.log("Test log message " + Math.random());
+            }, i * 1000);
+          }
+          for (let i = 0; i < 4; i++) {
+            setTimeout(() => {
+              job.error("Test error message " + Math.random());
+            }, i * 1000);
+          }
+          for (let i = 0; i < 4; i++) {
+            setTimeout(() => {
+              job.warning("Test warning message " + Math.random());
+            }, i * 1000);
+          }
+          for (let i = 0; i < 4; i++) {
+            setTimeout(() => {
+              job.debug("Test debug message " + Math.random());
+            }, i * 1000);
+          }
+          break;
+        case "/manyClean":
+          for (let i = 0; i < 10; i++) {
+            setTimeout(async () => {
+              const job1 = await monitor.createJob("Test job " + i, {
+                labels: ["dupa", i],
+              });
+              job1.operation("Job " + i);
+              if (i % 2 === 0) {
+                job1.log("Modulo = 0");
+                job1.log("Modulo = 0 :)");
+              }
+              if (i % 3 === 0) {
+                job1.progress(1);
+              }
+            }, i * 1000);
+          }
 
-        job.log("This is log");
-        break;
-      case "/logs":
-        break;
-      case "/manyClean":
-        break;
-      case "/manyPreserve":
-        break;
-      case "/current":
-        break;
+          break;
+        case "/manyPreserve":
+          break;
+        case "/current":
+          job.operation("Current operation " + Math.random());
+          break;
 
-      case "/noConnection":
-        break;
-      case "/brokeConnection":
-        break;
-      case "/cleanup":
-        await monitor.cleanup();
-        break;
+        case "/noConnection":
+          break;
+        case "/brokeConnection":
+          break;
+        case "/remove-monitor":
+          await monitor.remove();
+          break;
+        case "/cleanup-monitor":
+          await monitor.cleanup();
+          break;
+        case "/remove-job":
+          await job.remove();
+          break;
+        case "/cleanup-job":
+          await job.cleanup();
+          break;
+      }
+    } catch (e) {
+      console.log(e);
     }
   })();
-
 
   res.end(q.pathname);
 };

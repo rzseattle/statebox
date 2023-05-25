@@ -88,10 +88,26 @@ export class MessageProcessor {
                     monitor.getJobs().forEach((job) => {
                         monitor.removeJob(job);
                     });
+                } else if (message.action === "remove") {
+                    this.monitorList.remove(monitor);
+                } else {
+                    console.log("Unknown monitor action '" + message.action + "'");
+                }
+            }
+        } else if (message.subjectType === "job") {
+            const monitor = this.monitorList.findById(message.monitorId);
+            const job = monitor.getJobById(message.subjectId);
+            if (job !== null) {
+                if (message.action === "cleanup") {
+                    job.cleanup();
+                } else if (message.action === "remove") {
+                    monitor.removeJob(job);
                 }
             } else {
-                console.log("monitor not found");
+                console.log("job not found");
             }
+        } else {
+            console.log("Unknown subject type '" + message.subjectType + "'");
         }
         // const monitor = this.monitorList.findById(message.monitorId);
         //

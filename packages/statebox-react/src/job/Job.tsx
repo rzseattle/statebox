@@ -21,23 +21,24 @@ export const Job = ({
           <div className={styles.description}>{job.description}</div>
         )}
       </div>
-
       {job.currentOperation !== null && (
         <div className={styles.currentOperation}>{job.currentOperation}</div>
       )}
-
-      {job.progress && (job.progress.current != -1 || job.progress.end != -1) && (
-        <div className={styles.progressContainer}>
-          <ProgressBar current={job.progress.current} all={job.progress.end} />
-        </div>
-      )}
+      {job.progress &&
+        (job.progress.current != -1 || job.progress.end != -1) && (
+          <div className={styles.progressContainer}>
+            <ProgressBar
+              current={job.progress.current}
+              all={job.progress.end}
+            />
+          </div>
+        )}
 
       {job.logsPart.length > 0 && (
         <div className={styles.logsContainer}>
           <Logs logs={job.logsPart} />
         </div>
       )}
-
       {job.data !== null && <pre>{JSON.stringify(job.data, null, 2)} </pre>}
     </div>
   );

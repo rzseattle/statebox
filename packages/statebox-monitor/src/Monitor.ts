@@ -44,9 +44,7 @@ export class Monitor {
         this.connection = connection;
         this.config = extend(this.config, options) as IMonitorMessage;
 
-        connection.requestId("monitor", this).then((id) => {
-            this.id = id as string;
-        });
+        this.updateId();
 
         connection.onReconnect(() => {
             this.isMonitorDataSend = false;
@@ -62,6 +60,14 @@ export class Monitor {
     public requestUpdaterProvider = (): UpdateRequestConn => {
         return this._requestUpdate;
     };
+
+    public async updateId() {
+        this.id = null;
+        this.connection.requestId("monitor", this).then((id) => {
+            this.id = id as string;
+        });
+        await this.getId();
+    }
 
     public async getId() {
         return new Promise<string>((resolve, reject) => {
