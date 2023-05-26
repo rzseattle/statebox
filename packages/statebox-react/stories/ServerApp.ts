@@ -24,6 +24,11 @@ const requestListener = function (req, res) {
       switch (q.pathname) {
         case "/progress":
           job.progress(2, 100);
+          for (let i = 0; i < 10; i++) {
+            setTimeout(() => {
+              job.progress(10 * i + 1, 100);
+            }, i * 1000);
+          }
           break;
         case "/logs":
           for (let i = 0; i < 10; i++) {
