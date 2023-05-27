@@ -48,7 +48,12 @@ export class Job {
     get isDone(): boolean {
         return this._isDone;
     }
-    set isDone(value: boolean) {
+    public set isDone(value: boolean) {
+        this._isDone = value;
+        this.requestSend();
+    }
+
+    public setDone(value: boolean) {
         this._isDone = value;
         this.requestSend();
     }

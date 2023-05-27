@@ -33,6 +33,7 @@ const Template: Story<IMonitorListProps> = (_args) => (
   <StatusServerConnector
     tracked={["*/*"]}
     statusServerAddress={"ws://localhost:3012"}
+    keepDone={10}
   >
     {(data, error) => (
       <div>
@@ -46,7 +47,11 @@ const Template: Story<IMonitorListProps> = (_args) => (
         <TestButton title={"Many jobs preserve"} path={"/manyPreserve"} />
         <TestButton title={"Current job"} path={"/current"} />
         <br />
-        <MonitorList monitorList={data} />
+        <MonitorList
+          monitorList={data}
+          openedWhileNotFinished={true}
+          reverse={true}
+        />
         <pre>{JSON.stringify(data, null, 2)}</pre>
         <hr />
         {error}

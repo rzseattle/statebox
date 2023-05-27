@@ -53,7 +53,7 @@ const requestListener = function (req, res) {
           }
           break;
         case "/manyClean":
-          for (let i = 0; i < 10; i++) {
+          for (let i = 0; i < 20; i++) {
             setTimeout(async () => {
               const job1 = await monitor.createJob("Test job " + i, {
                 labels: ["dupa", i],
@@ -66,6 +66,9 @@ const requestListener = function (req, res) {
               if (i % 3 === 0) {
                 job1.progress(1);
               }
+              setTimeout(async () => {
+                job1.setDone(true);
+              }, 3000);
             }, i * 1000);
           }
 

@@ -80,12 +80,12 @@ export class MessageProcessor {
     };
 
     private processActionMessage = (message: IActionMessage) => {
-        console.log(message);
         if (message.subjectType === "monitor") {
             const monitor = this.monitorList.findById(message.subjectId);
             if (monitor !== null) {
                 if (message.action === "cleanup") {
-                    monitor.getJobs().forEach((job) => {
+                    const jobs = [ ... monitor.getJobs()];
+                    jobs.map((job) => {
                         monitor.removeJob(job);
                     });
                 } else if (message.action === "remove") {
