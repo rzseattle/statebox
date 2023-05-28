@@ -13,11 +13,15 @@ export const StatusServerConnector = ({
   statusServerAddress,
   children,
   keepDone = -1,
+  reverse = false,
+  openedWhileNotFinished = false,
 }: {
   tracked: string[];
   statusServerAddress: string;
   children?: (data: IMonitorClientState[], error: string) => React.ReactNode;
   keepDone?: number;
+  reverse?: boolean;
+  openedWhileNotFinished: boolean;
 }) => {
   const connector = React.useRef<StateboxClient>();
   const [lastMessage, setLastMessage] = useState([]);
@@ -74,7 +78,11 @@ export const StatusServerConnector = ({
   return (
     <div>
       <ConnectorContext.Provider value={connector.current}>
-        <MonitorList monitorList={lastMessage} />
+        <MonitorList
+          monitorList={lastMessage}
+          reverse={reverse}
+          openedWhileNotFinished={openedWhileNotFinished}
+        />
         {error && <div>{error}</div>}
         {/*{lastMessage.map((msg,index) => <div key={index}>{msg}</div>)}*/}
       </ConnectorContext.Provider>
