@@ -3,7 +3,7 @@
     "repository": "https://github.com/rzseattle/statebox",
     "private": true,
     "devDependencies": {
-        "lerna": "^3.22.1"
+        "lerna": "^6.4.1"
     },
     "prettier": {
         "tabWidth": 4
