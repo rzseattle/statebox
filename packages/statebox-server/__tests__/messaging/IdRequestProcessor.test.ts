@@ -1,7 +1,7 @@
 import { StateboxServer } from "../../src/server/StateboxServer";
 
 import { Monitor } from "../../src/structure/Monitor";
-import {IIdRequestMessage, MonitorOverwrite} from "statebox-common";
+import { IIdRequestMessage, MonitorOverwrite } from "statebox-common";
 
 describe("Request Id and overwrite strategies", () => {
     it("Full new monitor", () => {

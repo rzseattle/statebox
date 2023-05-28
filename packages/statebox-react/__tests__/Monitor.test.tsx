@@ -11,14 +11,12 @@ import { monitorsMockList } from "../__mocks__/TestMonitorList";
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 describe("Test with static data", () => {
-    it("Renders empty monitors list", () => {
-        render(<MonitorList monitorList={[]} title={"Test title"} />);
-        expect(screen.getByText("Test title")).toBeInTheDocument();
-    });
-    it("Test all", () => {
-        render(
-            <MonitorList monitorList={monitorsMockList} title={"Test title"} />
-        );
-        expect(screen.getByText("Test title")).toBeInTheDocument();
-    });
+  it("Renders empty monitors list", () => {
+    render(<MonitorList monitorList={[]} title={"Test title"} />);
+    expect(screen.getByText("Test title")).toBeInTheDocument();
+  });
+  it("Test all", () => {
+    render(<MonitorList monitorList={monitorsMockList} title={"Test title"} />);
+    expect(screen.getByText("Test title")).toBeInTheDocument();
+  });
 });

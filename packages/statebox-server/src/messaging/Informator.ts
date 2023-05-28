@@ -1,13 +1,11 @@
 import { Monitor } from "../structure/Monitor";
 import { Job } from "../structure/Job";
 import { Multiplexer } from "./Multiplexer";
-import {Logger} from "../lib/Logger";
-import {STATEBOX_EVENTS} from "statebox-common";
-
-
+import { Logger } from "../lib/Logger";
+import { STATEBOX_EVENTS } from "statebox-common";
 
 export class Informator {
-    constructor(private logger: Logger,private multiplexer: Multiplexer) {}
+    constructor(private logger: Logger, private multiplexer: Multiplexer) {}
     monitorAdded = (monitor: Monitor) => {
         this.logger.log("+++ monitor " + monitor.id);
         this.multiplexer.informListeners(STATEBOX_EVENTS.MONITOR_NEW, monitor);

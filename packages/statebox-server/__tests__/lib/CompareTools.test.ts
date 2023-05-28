@@ -68,13 +68,10 @@ describe("Update communicates tests", () => {
         expect(matchQuery("www|xxx&bbb/yyy&ccc", ["xxx", "bbb"], ["yyy", "ccc"])).toEqual(true);
         expect(matchQuery("ccc|www&bbb/yyy&ccc", ["xxx", "bbb"], ["yyy", "ccc"])).toEqual(false);
 
-
         expect(matchQuery("#monitor-id/*", ["xxx"], [], "monitor-id", "job-id")).toEqual(true);
         expect(matchQuery("#monitor-id-2/*", ["xxx"], [], "monitor-id", "job-id")).toEqual(false);
         expect(matchQuery("xxx/#job-id", ["xxx"], [], "monitor-id", "job-id")).toEqual(true);
         expect(matchQuery("xxx/#job-id-2", ["xxx"], [], "monitor-id", "job-id")).toEqual(false);
         expect(matchQuery("#monitor-id/#job-id", ["xxx"], [], "monitor-id", "job-id")).toEqual(true);
-
-
     });
 });

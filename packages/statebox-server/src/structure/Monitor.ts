@@ -68,10 +68,8 @@ export class Monitor extends AbstractTrackableObject implements IMonitorData {
     };
     public removeJob = (job: Job) => {
         const index = this.jobs.findIndex((el) => el.jobId === job.jobId);
-
-        this.runEvent(STATEBOX_EVENTS.JOB_DELETED, { monitor: this, job });
-
         this.jobs.splice(index, 1);
+        this.runEvent(STATEBOX_EVENTS.JOB_DELETED, { monitor: this, job });
     };
 
     public getJobs = () => {

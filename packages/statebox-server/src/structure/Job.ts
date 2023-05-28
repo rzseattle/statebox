@@ -8,7 +8,7 @@ export class Job extends AbstractTrackableObject implements IJobMessage {
     labels: string[];
     description = "";
     progress: { current: number; end: number } = { current: -1, end: -1 };
-    currentOperation = "";
+    currentOperation: string | null = null;
     logsPart: ILogKindMessage[] = [];
     done = false;
     data: any = null;
@@ -30,6 +30,7 @@ export class Job extends AbstractTrackableObject implements IJobMessage {
 
     consumeInputData(jobData: Partial<IJobMessage>, triggerChangeEvent = true) {
         this.description = jobData.description ?? this.description;
+        console.log(jobData.progress);
         this.progress = jobData.progress ?? this.progress;
         this.currentOperation = jobData.currentOperation ?? this.currentOperation;
         if (jobData.logsPart && jobData.logsPart.length > 0) {
@@ -81,7 +82,14 @@ export class Job extends AbstractTrackableObject implements IJobMessage {
     };
 
     cleanup() {
-        // informator.jobUpdated(this.monitor, this);
-        throw new Error("Not implemented cleanup for job");
+        this.description = "";
+        this.progress = { current: -1, end: -1 };
+        this.currentOperation = null;
+        this.logsPart = [];
+        this.title = "";
+        this.done = false;
+        this.error = false;
+        this.data = {};
+        this.runEvent(STATEBOX_EVENTS.JOB_UPDATED, { monitorId: this.monitorId, job: this });
     }
 }

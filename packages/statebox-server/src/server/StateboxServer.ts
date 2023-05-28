@@ -64,9 +64,7 @@ export class StateboxServer {
     public readonly logger: Logger;
 
     constructor(listenerPort = 3012, monitorPort = 3011) {
-        console.log("a zzz 11a");
         this.logger = new Logger();
-
         this.eventsRouter = new StateboxEventsRouter();
         this.listeners = new Listeners(this.eventsRouter);
         this.monitors = new Monitors(this.eventsRouter);
@@ -87,7 +85,6 @@ export class StateboxServer {
         this.logger.log("Monitors are listened as " + this.monitorsConnectionHandler.port);
         await this.listenersConnectionHandler.init();
         this.logger.log("Listeners are listened as " + this.listenersConnectionHandler.port);
-
     };
 
     public close = async () => {

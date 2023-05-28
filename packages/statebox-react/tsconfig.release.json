@@ -1,14 +1,14 @@
 {
-    "extends": "../../tsconfig.release.json",
-    "compilerOptions": {
-        "rootDir": "./src",
-        "outDir": "dist",
-        "sourceMap": true,
-        "declaration": true,
-        "esModuleInterop": true,
-        "lib": ["es5", "es2015.promise", "dom", "es2015"],
-        "target": "es5",
-        "module": "es2015"
-    },
-    "include": ["src/**/*"]
+  "extends": "../../tsconfig.release.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "lib": ["es5", "es2015.promise", "dom", "es2015"],
+    "target": "es5",
+    "module": "es2015"
+  },
+  "include": ["src/**/*"]
 }

@@ -1,5 +1,6 @@
 # status-server-node-monitor
-```js 
+
+```js
 const conn = new Connection("ws://localhost:3011");
 await conn.connect();
 const monitor = new Monitor(conn, "My test job monitor");

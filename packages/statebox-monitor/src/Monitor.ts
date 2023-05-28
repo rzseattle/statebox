@@ -41,13 +41,10 @@ export class Monitor {
     public requestUpdate: UpdateRequestConn;
 
     constructor(connection: Connection, options: IMonitorMessage) {
-
         this.connection = connection;
         this.config = extend(this.config, options) as IMonitorMessage;
 
-        connection.requestId("monitor", this).then((id) => {
-            this.id = id as string;
-        });
+        this.updateId();
 
         connection.onReconnect(() => {
             this.isMonitorDataSend = false;
@@ -63,6 +60,14 @@ export class Monitor {
     public requestUpdaterProvider = (): UpdateRequestConn => {
         return this._requestUpdate;
     };
+
+    public async updateId() {
+        this.id = null;
+        this.connection.requestId("monitor", this).then((id) => {
+            this.id = id as string;
+        });
+        await this.getId();
+    }
 
     public async getId() {
         return new Promise<string>((resolve, reject) => {
@@ -120,7 +125,7 @@ export class Monitor {
         const message: IJobMessage = { type: "job", jobId, monitorId: this.id as string, ...data };
         // todo send only!! if monitor data lost on server
         // eslint-disable-next-line no-constant-condition
-        if ( true || !this.isMonitorDataSend) {
+        if (true || !this.isMonitorDataSend) {
             message.monitorData = this.config;
             this.isMonitorDataSend = true;
         }

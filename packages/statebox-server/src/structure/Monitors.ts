@@ -1,7 +1,7 @@
 import { Monitor } from "./Monitor";
-import {  StateboxEventsRouter } from "./StateboxEventsRouter";
+import { StateboxEventsRouter } from "./StateboxEventsRouter";
 import { compareLabels } from "../lib/CompareTools";
-import {STATEBOX_EVENTS} from "statebox-common";
+import { STATEBOX_EVENTS } from "statebox-common";
 
 export class Monitors {
     monitors: Monitor[] = [];
@@ -20,9 +20,8 @@ export class Monitors {
     public remove = (monitor: Monitor) => {
         const index = this.monitors.findIndex((el) => el.id === monitor.id);
         if (index !== -1) {
-            this.eventsRouter.pushEvent(STATEBOX_EVENTS.MONITOR_DELETED, monitor);
-
             this.monitors.splice(index, 1);
+            this.eventsRouter.pushEvent(STATEBOX_EVENTS.MONITOR_DELETED, monitor);
         }
     };
 

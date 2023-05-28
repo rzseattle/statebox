@@ -3,11 +3,11 @@ import { IJobMessage, ILogKindMessage, LogMessageTypes } from "statebox-common";
 
 export class Job {
     private client: Monitor;
-    public progressFlag: { current: number; end: number } = { current: -1, end: -1 };
+    public progressFlag: { current: number; end: number } | null = null;
     private readonly id: string;
     public _title: string;
     private _description: string;
-    private currentOperation = "";
+    private currentOperation: string | null = null;
     private logKindMessage: ILogKindMessage[] = [];
     private updateRequestor: UpdateRequestConn;
 
@@ -48,7 +48,12 @@ export class Job {
     get isDone(): boolean {
         return this._isDone;
     }
-    set isDone(value: boolean) {
+    public set isDone(value: boolean) {
+        this._isDone = value;
+        this.requestSend();
+    }
+
+    public setDone(value: boolean) {
         this._isDone = value;
         this.requestSend();
     }
@@ -107,7 +112,7 @@ export class Job {
     }
 
     public progress = (current: number, end?: number) => {
-        this.progressFlag = { current, end: end ? end : this.progressFlag.end };
+        this.progressFlag = { current, end: end ? end : this.progressFlag?.end ?? 100 };
         this.requestSend();
     };
     public log = (text: string | string[], messageType: LogMessageTypes = LogMessageTypes.INFO) => {
@@ -158,10 +163,10 @@ export class Job {
     };
 
     public cleanup = () => {
-        this.client.requestAction("monitor", this.id, "cleanup");
+        this.client.requestAction("job", this.id, "cleanup");
     };
 
     public remove = () => {
-        this.client.requestAction("monitor", this.id, "remove");
+        this.client.requestAction("job", this.id, "remove");
     };
 }

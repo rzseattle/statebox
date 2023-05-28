@@ -2,11 +2,10 @@ import * as NodeWS from "ws";
 import { nanoid } from "nanoid";
 import { Monitor } from "./Monitor";
 import { MonitorOverwrite } from "statebox-common";
-import {Logger} from "./lib/Logger";
-
+import { Logger } from "./lib/Logger";
 
 interface IPendingRequest {
-    elementType: "monitor" | "job" ;
+    elementType: "monitor" | "job";
     monitorId: string | null;
     time: number;
     controlKey1: string;
@@ -69,12 +68,12 @@ export class Connection {
                 this.browserConnection.send(JSON.stringify(str));
             }
         } catch (er) {
-
             console.error("---------------------------------");
             console.error("Can't send message");
             this.logger.debug(message);
+            this.logger.debug(er);
             console.trace();
-            console.error("---------------------------------");
+            console.error("111---------------------------------");
         }
     };
 
@@ -181,7 +180,7 @@ export class Connection {
                 if (this._reconnectTimeout === 0) {
                     reject(new Error("Status server connection is closed"));
                 } else {
-                    this.logger.error("Can't connect to 1  : " + this.url );
+                    this.logger.error("Can't connect to 1  : " + this.url);
 
                     this.reconnectTimeoutToClear = setTimeout(() => {
                         this.connect();

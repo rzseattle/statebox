@@ -1,5 +1,5 @@
-import {  StateboxEventsRouter } from "./StateboxEventsRouter";
-import {STATEBOX_EVENTS} from "statebox-common";
+import { StateboxEventsRouter } from "./StateboxEventsRouter";
+import { STATEBOX_EVENTS } from "statebox-common";
 
 export interface IListenerData {
     id: string;
