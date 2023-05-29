@@ -17,6 +17,9 @@ jobs:
           name: Service account
           email: artur.kmera@3code.pl
       - uses: pnpm/action-setup@v2
+        with:
+          version: 6.0.2
+          run_install: null
       - uses: actions/setup-node@v3
         with:
           node-version: 16
