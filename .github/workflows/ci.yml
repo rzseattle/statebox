@@ -16,10 +16,13 @@ jobs:
         with:
           name: Service account
           email: artur.kmera@3code.pl
+      - uses: pnpm/action-setup@v3
+        with:
+          node-version: 16
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: "pnpm"
+          cache: pnpm
       - name: Verify Change Logs
         run: node common/scripts/install-run-rush.js change --verify
       - name: Rush Install
