@@ -47,7 +47,7 @@
     "ws": "^8.13.0"
   },
   "dependencies": {
-    "statebox-common": "^0.0.12",
+    "statebox-common": "workspace:^0.0.12",
     "tslib": "~2.5.2",
     "@types/node": "~20.2.1"
   },
